@@ -17,31 +17,57 @@
                     </div>
 
                     <#if passwordRequired?? && (attribute.name == 'username' || (attribute.name == 'email' && realm.registrationEmailAsUsername))>
-                        <div class="dens-field">
+                        <div class="dens-kc-field">
                             <label class="dens-label" for="password">${msg("password")}</label>
-                            <input
-                                type="password"
-                                id="password"
-                                name="password"
-                                class="pf-c-form-control form-control"
-                                autocomplete="new-password"
-                                aria-invalid="<#if messagesPerField.existsError('password')>true<#else>false</#if>"
-                            />
+                            <div class="dens-input-wrap <#if messagesPerField.existsError('password')>is-error</#if>">
+                                <input
+                                    type="password"
+                                    id="password"
+                                    name="password"
+                                    class="dens-plain-input"
+                                    autocomplete="new-password"
+                                    aria-invalid="<#if messagesPerField.existsError('password')>true<#else>false</#if>"
+                                />
+                                <button
+                                    type="button"
+                                    class="dens-password-toggle"
+                                    data-password-toggle
+                                    data-password-target="password"
+                                    aria-label="${msg('togglePasswordLabel')}"
+                                    aria-controls="password"
+                                    aria-pressed="false"
+                                >
+                                    <span class="dens-eye" aria-hidden="true"></span>
+                                </button>
+                            </div>
                             <#if messagesPerField.existsError('password')>
                                 <span class="dens-field-error">${kcSanitize(messagesPerField.get('password'))?no_esc}</span>
                             </#if>
                         </div>
 
-                        <div class="dens-field">
+                        <div class="dens-kc-field">
                             <label class="dens-label" for="password-confirm">${msg("passwordConfirm")}</label>
-                            <input
-                                type="password"
-                                id="password-confirm"
-                                name="password-confirm"
-                                class="pf-c-form-control form-control"
-                                autocomplete="new-password"
-                                aria-invalid="<#if messagesPerField.existsError('password-confirm')>true<#else>false</#if>"
-                            />
+                            <div class="dens-input-wrap <#if messagesPerField.existsError('password-confirm')>is-error</#if>">
+                                <input
+                                    type="password"
+                                    id="password-confirm"
+                                    name="password-confirm"
+                                    class="dens-plain-input"
+                                    autocomplete="new-password"
+                                    aria-invalid="<#if messagesPerField.existsError('password-confirm')>true<#else>false</#if>"
+                                />
+                                <button
+                                    type="button"
+                                    class="dens-password-toggle"
+                                    data-password-toggle
+                                    data-password-target="password-confirm"
+                                    aria-label="${msg('togglePasswordLabel')}"
+                                    aria-controls="password-confirm"
+                                    aria-pressed="false"
+                                >
+                                    <span class="dens-eye" aria-hidden="true"></span>
+                                </button>
+                            </div>
                             <#if messagesPerField.existsError('password-confirm')>
                                 <span class="dens-field-error">${kcSanitize(messagesPerField.get('password-confirm'))?no_esc}</span>
                             </#if>
@@ -56,7 +82,7 @@
 
             <#if recaptchaRequired??>
                 <div class="dens-kc-field">
-                    <div class="g-recaptcha" data-size="compact" data-sitekey="${recaptchaSiteKey}" data-action="${recaptchaAction}"></div>
+                    <div class="g-recaptcha" data-sitekey="${recaptchaSiteKey}" data-action="${recaptchaAction}"></div>
                 </div>
             </#if>
 

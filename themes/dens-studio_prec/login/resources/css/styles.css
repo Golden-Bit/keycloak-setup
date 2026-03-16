@@ -1,15 +1,15 @@
 :root {
-  --dens-page-bg: #ffffff;
+  --dens-bg: #ffffff;
   --dens-card-bg: #ffffff;
   --dens-text: #171717;
   --dens-muted: #666666;
-  --dens-border: #ebebeb;
+  --dens-border: #e5e5e5;
   --dens-border-strong: #e5e5e5;
   --dens-primary: #3f7df0;
   --dens-primary-hover: #2f6fe8;
   --dens-danger: #cc3344;
   --dens-focus: rgba(63, 125, 240, 0.16);
-  --dens-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --dens-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
   --dens-radius-card: 18px;
   --dens-radius-input: 10px;
   --dens-font: system-ui, -apple-system, sans-serif;
@@ -18,33 +18,41 @@
 html,
 body,
 body.dens-login-body,
+html body,
+#kc-content,
+#kc-content-wrapper,
 .login-pf,
 .login-pf-page,
 .kcBodyClass,
-#kc-bg,
-#kc-bg::before,
-#kc-bg::after,
-.login-pf body,
-.login-pf-page::before,
-.login-pf-page::after {
+.kcLoginClass,
+.kcHtmlClass {
   margin: 0 !important;
   padding: 0 !important;
-  min-height: 100%;
+  min-height: 100% !important;
   background: #ffffff !important;
   background-color: #ffffff !important;
   background-image: none !important;
   color: var(--dens-text);
-  font-family: var(--dens-font);
+  font-family: var(--dens-font) !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-body.dens-login-body::before,
-body.dens-login-body::after,
+html::before,
+html::after,
+body::before,
+body::after,
 .login-pf-page::before,
-.login-pf-page::after {
-  content: none !important;
+.login-pf-page::after,
+.login-pf body::before,
+.login-pf body::after,
+#kc-bg,
+#kc-bg::before,
+#kc-bg::after {
   display: none !important;
+  content: none !important;
+  background: none !important;
+  background-image: none !important;
 }
 
 *,
@@ -54,8 +62,7 @@ body.dens-login-body::after,
 }
 
 body.dens-login-body {
-  min-height: 100vh;
-  width: 100%;
+  min-height: 100vh !important;
 }
 
 .dens-shell {
@@ -70,18 +77,20 @@ body.dens-login-body {
 
 .dens-stack {
   width: 100%;
-  max-width: 410px;
+  max-width: 414px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .dens-brand {
-  display: inline-flex;
+  width: 100%;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 14px;
-  margin: 0 auto 32px;
+  margin: 0 auto 30px;
   text-align: left;
 }
 
@@ -109,7 +118,7 @@ body.dens-login-body {
 .dens-brand__subtitle {
   margin-top: 4px;
   font-size: 14px;
-  line-height: 1.35;
+  line-height: 1.3;
   font-weight: 400;
   color: #737373;
 }
@@ -129,7 +138,6 @@ body.dens-login-body {
 
 .dens-back:hover {
   color: #5c524e;
-  text-decoration: none;
 }
 
 .dens-back__arrow {
@@ -211,12 +219,6 @@ body.dens-login-body {
 .dens-form,
 .dens-form--register {
   display: block;
-  width: 100%;
-}
-
-.dens-field,
-.dens-kc-field {
-  width: 100%;
 }
 
 .dens-field + .dens-field,
@@ -226,10 +228,7 @@ body.dens-login-body {
 
 .dens-label,
 .pf-c-form__label,
-.pf-v5-c-form__label,
-.pf-c-form__label-text,
-.pf-v5-c-form__label-text,
-label {
+.pf-c-form__label-text {
   display: inline-block;
   margin-bottom: 8px;
   font-size: 14px;
@@ -238,35 +237,10 @@ label {
   color: #111111;
 }
 
-.dens-form--register .row,
-.dens-form--register [class*="col-"],
-.dens-form--register .pf-c-form,
-.dens-form--register .pf-v5-c-form,
-.dens-form--register .pf-c-form__group,
-.dens-form--register .pf-v5-c-form__group,
-.dens-form--register .pf-c-form__group-control,
-.dens-form--register .pf-v5-c-form__group-control,
-.dens-form--register .form-group {
-  display: block !important;
-  width: 100% !important;
-  max-width: none !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  float: none !important;
-  flex: none !important;
-}
-
-.dens-form--register .pf-c-form__group + .pf-c-form__group,
-.dens-form--register .pf-v5-c-form__group + .pf-v5-c-form__group,
-.dens-form--register .form-group + .form-group {
-  margin-top: 14px !important;
-}
-
 .dens-input-wrap {
   position: relative;
   display: flex;
   align-items: center;
-  width: 100%;
   min-height: 46px;
   border: 1px solid var(--dens-border-strong);
   border-radius: var(--dens-radius-input);
@@ -301,75 +275,48 @@ label {
 }
 
 .dens-input,
-.dens-plain-input,
-.dens-form--register .pf-c-form-control,
-.dens-form--register .pf-v5-c-form-control,
-.dens-form--register input[type="text"],
-.dens-form--register input[type="email"],
-.dens-form--register input[type="password"],
-.dens-form--register input[type="tel"],
-.dens-form--register input[type="number"],
-.dens-form--register input[type="search"],
-.dens-form--register input[type="url"],
-.dens-form--register select,
-.dens-form--register textarea {
-  display: block;
-  width: 100% !important;
-  min-height: 46px !important;
-  border: 1px solid var(--dens-border-strong) !important;
-  border-radius: var(--dens-radius-input) !important;
-  outline: 0 !important;
-  box-shadow: none !important;
+.pf-c-form-control,
+.form-control,
+textarea.pf-c-form-control,
+select.pf-c-form-control {
+  width: 100%;
+  min-height: 46px;
+  border: 1px solid var(--dens-border-strong);
+  outline: 0;
   background: #ffffff !important;
-  padding: 0 14px !important;
-  font-size: 16px !important;
-  line-height: 1.4 !important;
-  color: #111111 !important;
-  font-family: var(--dens-font) !important;
+  padding: 0 14px;
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 400;
+  color: #171717;
+  box-sizing: border-box;
+  border-radius: var(--dens-radius-input);
+  box-shadow: none;
   appearance: none;
 }
 
 .dens-input {
-  border: 0 !important;
+  border: 0;
   background: transparent !important;
-  padding: 0 14px 0 44px !important;
-}
-
-.dens-plain-input {
-  border: 0 !important;
-  background: transparent !important;
-  padding: 0 44px 0 14px !important;
-}
-
-.dens-input--password {
-  padding-right: 44px !important;
-}
-
-.dens-form--register textarea {
-  min-height: 96px !important;
-  padding-top: 12px !important;
-  padding-bottom: 12px !important;
-  resize: vertical;
-}
-
-.dens-form--register select {
-  padding-right: 36px !important;
-}
-
-.dens-form--register .pf-c-form-control:focus,
-.dens-form--register .pf-v5-c-form-control:focus,
-.dens-form--register input:focus,
-.dens-form--register select:focus,
-.dens-form--register textarea:focus {
-  border-color: var(--dens-primary) !important;
-  box-shadow: 0 0 0 3px var(--dens-focus) !important;
+  padding: 0 14px 0 42px;
 }
 
 .dens-input::placeholder,
-.dens-plain-input::placeholder,
-.dens-form--register input::placeholder,
-.dens-form--register textarea::placeholder {
-  color: #9a9a9a;
+.pf-c-form-control::placeholder,
+.form-control::placeholder {
+  color: #a3a3a3;
+}
+
+.dens-input--password {
+  padding-right: 44px;
+}
+
+.pf-c-form-control:focus,
+.form-control:focus,
+textarea.pf-c-form-control:focus,
+select.pf-c-form-control:focus {
+  border-color: var(--dens-primary);
+  box-shadow: 0 0 0 3px var(--dens-focus);
 }
 
 input:-webkit-autofill,
@@ -377,9 +324,10 @@ input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 textarea:-webkit-autofill,
 select:-webkit-autofill {
-  -webkit-text-fill-color: #111111 !important;
-  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
-  transition: background-color 9999s ease-out 0s;
+  -webkit-text-fill-color: #171717;
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  transition: background-color 9999s ease-in-out 0s;
 }
 
 .dens-password-toggle {
@@ -391,40 +339,19 @@ select:-webkit-autofill {
   background: transparent;
   border-radius: 50%;
   cursor: pointer;
-  color: #777;
+  font-size: 14px;
+  color: #737373;
 }
 
 .dens-password-toggle:hover {
   background: rgba(0, 0, 0, 0.05);
 }
 
-.dens-eye {
-  display: inline-block;
-  width: 16px;
-  height: 10px;
-  border: 1.6px solid currentColor;
-  border-radius: 12px / 8px;
-  position: relative;
-}
-
-.dens-eye::after {
-  content: "";
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: currentColor;
-  transform: translate(-50%, -50%);
-}
-
 .dens-field-error,
-.pf-c-form__helper-text,
-.pf-v5-c-form__helper-text,
-.pf-c-form__helper-text-item,
-.pf-v5-c-form__helper-text-item {
-  display: block;
+.pf-c-form__helper-text.pf-m-error,
+.required.kc-feedback-text,
+.help-block {
+  display: inline-block;
   margin-top: 8px;
   font-size: 13px;
   line-height: 1.4;
@@ -433,16 +360,41 @@ select:-webkit-autofill {
 
 .dens-form-links {
   margin-top: 12px;
+  text-align: right;
 }
 
-.dens-form-links--top {
-  text-align: right;
+.dens-actions {
+  margin-top: 16px;
+}
+
+.dens-submit,
+button[type="submit"].pf-c-button,
+input[type="submit"].pf-c-button {
+  width: 100%;
+  min-height: 44px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--dens-primary);
+  color: #ffffff;
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease;
+  padding: 10px 16px;
+}
+
+.dens-submit:hover,
+button[type="submit"].pf-c-button:hover,
+input[type="submit"].pf-c-button:hover {
+  background: var(--dens-primary-hover);
 }
 
 .dens-inline-link {
   color: var(--dens-primary);
   text-decoration: none;
   font-size: 14px;
+  line-height: 1.5;
   font-weight: 500;
 }
 
@@ -450,48 +402,19 @@ select:-webkit-autofill {
   text-decoration: underline;
 }
 
-.dens-actions {
-  margin-top: 16px;
+.dens-remember-wrap {
+  margin-top: 12px;
 }
 
-.dens-submit {
-  width: 100%;
-  min-height: 46px;
-  border: 0;
-  border-radius: 10px;
-  background: var(--dens-primary);
-  color: #ffffff;
-  font-size: 16px;
-  line-height: 1.3;
-  font-weight: 600;
-  font-family: var(--dens-font);
-  cursor: pointer;
-  transition: background 0.15s ease;
-}
-
-.dens-submit:hover {
-  background: var(--dens-primary-hover);
-}
-
-.dens-submit--link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  text-decoration: none;
-}
-
-.dens-check {
+.dens-checkbox {
   display: inline-flex;
   align-items: center;
   gap: 8px;
-  margin-top: 12px;
   font-size: 14px;
   color: #555;
 }
 
-.dens-check input[type="checkbox"] {
-  width: 16px;
-  height: 16px;
+.dens-checkbox input {
   margin: 0;
 }
 
@@ -499,42 +422,78 @@ select:-webkit-autofill {
   margin-top: 18px;
   text-align: center;
   font-size: 14px;
-  color: #666;
+  line-height: 1.5;
+  color: #666666;
 }
 
 .dens-register--back {
-  text-align: left;
+  margin-top: 16px;
 }
 
-.dens-footer {
-  width: 100%;
-  margin-top: 30px;
+.dens-card__info {
+  margin-top: 8px;
+}
+
+.dens-info-message {
   text-align: center;
+}
+
+.dens-info-message__header {
+  margin-bottom: 8px;
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 500;
+  color: #171717;
+}
+
+.dens-info-message__body {
   font-size: 14px;
   line-height: 1.5;
   color: #666666;
 }
 
-.dens-info-block {
-  display: flex;
-  flex-direction: column;
-  gap: 14px;
+.dens-footer {
+  width: 100%;
+  text-align: center;
+  margin-top: 28px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: #737373;
 }
 
-.dens-info-list {
-  margin: 0;
-  padding-left: 18px;
-  color: #444;
+.pf-c-form__helper-text,
+.pf-c-form__helper-text-before,
+.pf-c-form__helper-text-after {
+  font-size: 13px;
+  color: #737373;
+  margin-top: 6px;
+}
+
+.pf-c-check,
+.pf-c-radio {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.pf-c-check__label,
+.pf-c-radio__label {
+  font-size: 14px;
+  color: #555;
 }
 
 .g-recaptcha {
-  max-width: 100%;
-  overflow: hidden;
+  margin-top: 6px;
 }
 
 @media (max-width: 560px) {
   .dens-shell {
-    padding: 28px 16px;
+    padding: 20px 12px;
+  }
+
+  .dens-stack {
+    max-width: 100%;
   }
 
   .dens-brand {
@@ -547,9 +506,5 @@ select:-webkit-autofill {
 
   .dens-card {
     padding: 20px 16px;
-  }
-
-  .dens-footer {
-    font-size: 13px;
   }
 }

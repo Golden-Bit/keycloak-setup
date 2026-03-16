@@ -1,6 +1,6 @@
 <#macro registrationLayout bodyClass="" displayInfo=false displayMessage=true displayRequiredFields=false section="">
 <!DOCTYPE html>
-<html class="${properties.kcHtmlClass!}" lang="<#if locale?? && locale.currentLanguageTag??>${locale.currentLanguageTag}<#else>it</#if>">
+<html lang="<#if locale?? && locale.currentLanguageTag??>${locale.currentLanguageTag}<#else>it</#if>">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -60,7 +60,7 @@
                     <h1 class="dens-card__title"><#nested "header"></h1>
                     <p class="dens-card__subtitle"><#attempt><#nested "subtitle"><#recover>${msg("loginSubtitle")}</#attempt></p>
                     <#if displayRequiredFields>
-                        <p class="dens-required-note">${msg("requiredFieldsText")}</p>
+                        <p class="dens-required-note">* ${msg("requiredFields")}</p>
                     </#if>
                 </header>
 
