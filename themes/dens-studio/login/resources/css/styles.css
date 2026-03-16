@@ -3,39 +3,56 @@
   --dens-card-bg: #ffffff;
   --dens-text: #171717;
   --dens-muted: #666666;
-  --dens-border: #ebebeb;
+  --dens-border: #e5e5e5;
   --dens-border-strong: #e5e5e5;
   --dens-primary: #3f7df0;
   --dens-primary-hover: #2f6fe8;
   --dens-danger: #cc3344;
   --dens-focus: rgba(63, 125, 240, 0.16);
-  --dens-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
+  --dens-shadow: 0 1px 2px rgba(0, 0, 0, 0.06);
   --dens-radius-card: 18px;
   --dens-radius-input: 10px;
-  --dens-radius-demo: 12px;
   --dens-font: system-ui, -apple-system, sans-serif;
 }
 
 html,
 body,
 body.dens-login-body,
+html body,
+#kc-content,
+#kc-content-wrapper,
 .login-pf,
-.login-pf body,
 .login-pf-page,
 .kcBodyClass,
-#kc-bg,
-#kc-bg::before,
-#kc-bg::after {
+.kcLoginClass,
+.kcHtmlClass {
   margin: 0 !important;
   padding: 0 !important;
-  min-height: 100%;
+  min-height: 100% !important;
   background: #ffffff !important;
   background-color: #ffffff !important;
   background-image: none !important;
   color: var(--dens-text);
-  font-family: var(--dens-font);
+  font-family: var(--dens-font) !important;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+}
+
+html::before,
+html::after,
+body::before,
+body::after,
+.login-pf-page::before,
+.login-pf-page::after,
+.login-pf body::before,
+.login-pf body::after,
+#kc-bg,
+#kc-bg::before,
+#kc-bg::after {
+  display: none !important;
+  content: none !important;
+  background: none !important;
+  background-image: none !important;
 }
 
 *,
@@ -45,7 +62,7 @@ body.dens-login-body,
 }
 
 body.dens-login-body {
-  min-height: 100vh;
+  min-height: 100vh !important;
 }
 
 .dens-shell {
@@ -55,29 +72,32 @@ body.dens-login-body {
   align-items: center;
   justify-content: center;
   padding: 24px 16px;
+  background: #ffffff;
 }
 
 .dens-stack {
   width: 100%;
-  max-width: 410px;
+  max-width: 414px;
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-content: center;
 }
 
 .dens-brand {
-  display: inline-flex;
+  width: 100%;
+  display: flex;
   align-items: center;
   justify-content: center;
   gap: 14px;
-  margin: 0 auto 32px;
+  margin: 0 auto 30px;
   text-align: left;
 }
 
 .dens-brand__icon {
-  width: 50px;
-  height: 50px;
-  flex: 0 0 50px;
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
 }
 
 .dens-brand__copy {
@@ -117,7 +137,6 @@ body.dens-login-body {
 }
 
 .dens-back:hover {
-  text-decoration: none;
   color: #5c524e;
 }
 
@@ -264,7 +283,7 @@ select.pf-c-form-control {
   min-height: 46px;
   border: 1px solid var(--dens-border-strong);
   outline: 0;
-  background: #ffffff;
+  background: #ffffff !important;
   padding: 0 14px;
   font-size: 15px;
   line-height: 1.5;
@@ -278,7 +297,7 @@ select.pf-c-form-control {
 
 .dens-input {
   border: 0;
-  background: transparent;
+  background: transparent !important;
   padding: 0 14px 0 42px;
 }
 
@@ -306,7 +325,8 @@ input:-webkit-autofill:focus,
 textarea:-webkit-autofill,
 select:-webkit-autofill {
   -webkit-text-fill-color: #171717;
-  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset;
+  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset !important;
+  box-shadow: 0 0 0px 1000px #ffffff inset !important;
   transition: background-color 9999s ease-in-out 0s;
 }
 
@@ -338,25 +358,9 @@ select:-webkit-autofill {
   color: var(--dens-danger);
 }
 
-.dens-form-meta {
+.dens-form-links {
   margin-top: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
-}
-
-.dens-checkbox {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #555;
-}
-
-.dens-checkbox input {
-  margin: 0;
+  text-align: right;
 }
 
 .dens-actions {
@@ -398,6 +402,22 @@ input[type="submit"].pf-c-button:hover {
   text-decoration: underline;
 }
 
+.dens-remember-wrap {
+  margin-top: 12px;
+}
+
+.dens-checkbox {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #555;
+}
+
+.dens-checkbox input {
+  margin: 0;
+}
+
 .dens-register {
   margin-top: 18px;
   text-align: center;
@@ -408,26 +428,6 @@ input[type="submit"].pf-c-button:hover {
 
 .dens-register--back {
   margin-top: 16px;
-}
-
-.dens-demo {
-  margin-top: 22px;
-  padding: 16px;
-  background: #f5f5f5;
-  border-radius: var(--dens-radius-demo);
-  color: #5f5f5f;
-}
-
-.dens-demo__title {
-  font-size: 15px;
-  line-height: 1.5;
-  font-weight: 500;
-  margin-bottom: 10px;
-}
-
-.dens-demo__row {
-  font-size: 14px;
-  line-height: 1.5;
 }
 
 .dens-card__info {
@@ -506,10 +506,5 @@ input[type="submit"].pf-c-button:hover {
 
   .dens-card {
     padding: 20px 16px;
-  }
-
-  .dens-form-meta {
-    align-items: flex-start;
-    flex-direction: column;
   }
 }

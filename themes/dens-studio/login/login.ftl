@@ -87,46 +87,25 @@
                 </#if>
             </div>
 
-            <div class="dens-form-meta">
-                <#if realm.rememberMe && !usernameHidden??>
-                    <label class="dens-checkbox">
-                        <input
-                            type="checkbox"
-                            id="rememberMe"
-                            name="rememberMe"
-                            <#if login.rememberMe??>checked</#if>
-                        />
-                        <span>${msg("rememberMe")}</span>
-                    </label>
-                </#if>
-
-                <#if realm.resetPasswordAllowed>
-                    <a class="dens-inline-link" href="${url.loginResetCredentialsUrl}">
-                        ${msg("doForgotPassword")}
-                    </a>
-                </#if>
-            </div>
+            <#if realm.resetPasswordAllowed>
+                <div class="dens-form-links">
+                    <a class="dens-inline-link" href="${url.loginResetCredentialsUrl}">${msg("doForgotPassword")}</a>
+                </div>
+            </#if>
 
             <input type="hidden" id="id-hidden-input" name="credentialId"
                 <#if auth.selectedCredential?has_content>value="${auth.selectedCredential}"</#if>/>
 
             <div class="dens-actions">
-                <button class="dens-submit" id="kc-login" name="login" type="submit">
-                    ${msg("doLogIn")}
-                </button>
+                <button class="dens-submit" id="kc-login" name="login" type="submit">${msg("doLogIn")}</button>
             </div>
 
-            <#if (properties.densShowDemoCredentials!'false') == 'true'>
-                <div class="dens-demo">
-                    <div class="dens-demo__title">${msg("demoCredentialsTitle")}</div>
-
-                    <#if properties.densDemoEmail?? && properties.densDemoEmail?has_content>
-                        <div class="dens-demo__row">${msg("email")}: ${properties.densDemoEmail}</div>
-                    </#if>
-
-                    <#if properties.densDemoPassword?? && properties.densDemoPassword?has_content>
-                        <div class="dens-demo__row">${msg("password")}: ${properties.densDemoPassword}</div>
-                    </#if>
+            <#if realm.rememberMe && !usernameHidden??>
+                <div class="dens-remember-wrap">
+                    <label class="dens-checkbox">
+                        <input type="checkbox" id="rememberMe" name="rememberMe" <#if login.rememberMe??>checked</#if> />
+                        <span>${msg("rememberMe")}</span>
+                    </label>
                 </div>
             </#if>
         </form>

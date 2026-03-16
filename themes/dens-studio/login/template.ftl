@@ -1,6 +1,6 @@
 <#macro registrationLayout bodyClass="" displayInfo=false displayMessage=true displayRequiredFields=false section="">
 <!DOCTYPE html>
-<html class="${properties.kcHtmlClass!}" lang="<#if locale?? && locale.currentLanguageTag??>${locale.currentLanguageTag}<#else>it</#if>">
+<html lang="<#if locale?? && locale.currentLanguageTag??>${locale.currentLanguageTag}<#else>it</#if>">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -14,12 +14,6 @@
     </#if>
 
     <title><#attempt><#nested "header"><#recover>${msg("loginTitle")}</#attempt></title>
-
-    <#if properties.stylesCommon?has_content>
-        <#list properties.stylesCommon?split(' ') as style>
-            <link href="${url.resourcesCommonPath}/${style}" rel="stylesheet" />
-        </#list>
-    </#if>
 
     <#if properties.styles?has_content>
         <#list properties.styles?split(' ') as style>
