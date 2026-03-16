@@ -1,6 +1,6 @@
 <#macro registrationLayout bodyClass="" displayInfo=false displayMessage=true displayRequiredFields=false section="">
 <!DOCTYPE html>
-<html class="${properties.kcHtmlClass!}" lang="${locale.currentLanguageTag!'it'}">
+<html class="${properties.kcHtmlClass!}" lang="<#if locale?? && locale.currentLanguageTag??>${locale.currentLanguageTag}<#else>it</#if>">
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
@@ -22,7 +22,7 @@
     </#if>
 </head>
 
-<body class="dens-login-body ${bodyClass}">
+<body class="dens-login-body ${bodyClass!}">
     <div class="dens-shell">
         <div class="dens-brand">
             <img class="dens-brand__icon" src="${url.resourcesPath}/${properties.densBrandIcon!'img/icon-brand.svg'}" alt="${msg('brandTitle')}" />

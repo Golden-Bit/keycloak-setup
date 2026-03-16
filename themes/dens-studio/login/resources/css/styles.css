@@ -60,3 +60,14 @@ html, body { margin:0; padding:0; min-height:100%; font-family:var(--dens-font);
   .dens-brand__title { font-size:20px; }
   .dens-footer { font-size:13px; }
 }
+
+html,
+body,
+body.dens-login-body,
+.login-pf,
+.login-pf body,
+.login-pf-page,
+.kcBodyClass {
+  background: #f3f3f3 !important;
+  background-image: none !important;
+}
