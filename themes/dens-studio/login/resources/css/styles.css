@@ -1,0 +1,62 @@
+:root {
+  --dens-bg: #f3f3f3;
+  --dens-card-bg: #ffffff;
+  --dens-text: #111111;
+  --dens-muted: #6f6f6f;
+  --dens-border: #dfdfdf;
+  --dens-border-strong: #d2d2d2;
+  --dens-primary: #3f7df0;
+  --dens-primary-hover: #2f6fe8;
+  --dens-danger: #cc3344;
+  --dens-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  --dens-radius-card: 18px;
+  --dens-radius-input: 10px;
+  --dens-radius-demo: 12px;
+  --dens-font: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+}
+html, body { margin:0; padding:0; min-height:100%; font-family:var(--dens-font); background:var(--dens-bg); color:var(--dens-text); }
+.dens-login-body { min-height:100vh; }
+.dens-shell { min-height:100vh; display:flex; flex-direction:column; align-items:center; padding:60px 24px 40px; box-sizing:border-box; }
+.dens-brand { width:100%; max-width:440px; display:flex; align-items:center; gap:16px; margin-bottom:34px; }
+.dens-brand__icon { width:62px; height:62px; flex:0 0 62px; }
+.dens-brand__title { font-size:22px; line-height:1.15; font-weight:800; color:#000; }
+.dens-brand__subtitle { margin-top:4px; font-size:14px; color:var(--dens-muted); }
+.dens-back { width:100%; max-width:440px; display:inline-flex; align-items:center; gap:10px; text-decoration:none; color:#6b5d57; font-size:15px; margin-bottom:22px; }
+.dens-back:hover { text-decoration:underline; }
+.dens-back__arrow { font-size:21px; line-height:1; color:#6b6b6b; }
+.dens-card { width:100%; max-width:440px; background:var(--dens-card-bg); border:1px solid var(--dens-border); border-radius:var(--dens-radius-card); box-shadow:var(--dens-shadow); padding:24px; box-sizing:border-box; }
+.dens-card__header { text-align:center; margin-bottom:24px; }
+.dens-card__title { margin:0; font-size:20px; line-height:1.25; font-weight:800; color:#000; }
+.dens-card__subtitle { margin:12px 0 0; font-size:15px; line-height:1.45; color:var(--dens-muted); }
+.dens-alert { margin-bottom:18px; border-radius:10px; padding:12px 14px; font-size:14px; }
+.dens-alert--error { background:#fff1f2; border:1px solid #fecdd3; color:#9f1239; }
+.dens-alert--success { background:#ecfdf5; border:1px solid #a7f3d0; color:#065f46; }
+.dens-alert--warning { background:#fff7ed; border:1px solid #fed7aa; color:#9a3412; }
+.dens-alert--info { background:#eff6ff; border:1px solid #bfdbfe; color:#1d4ed8; }
+.dens-field + .dens-field { margin-top:16px; }
+.dens-label { display:inline-block; margin-bottom:8px; font-size:15px; font-weight:600; color:#111; }
+.dens-input-wrap { position:relative; display:flex; align-items:center; min-height:48px; border:1px solid var(--dens-border-strong); border-radius:var(--dens-radius-input); background:#fff; transition:border-color .15s ease, box-shadow .15s ease; }
+.dens-input-wrap:focus-within { border-color:var(--dens-primary); box-shadow:0 0 0 3px rgba(63,125,240,.16); }
+.dens-input-wrap.is-error { border-color:var(--dens-danger); }
+.dens-input-icon { position:absolute; left:14px; display:inline-flex; align-items:center; justify-content:center; width:18px; height:18px; pointer-events:none; }
+.dens-input-icon img { width:18px; height:18px; opacity:.72; }
+.dens-input { width:100%; min-height:48px; border:0; outline:0; background:transparent; padding:0 14px 0 44px; font-size:16px; color:#111; box-sizing:border-box; }
+.dens-input::placeholder { color:#9a9a9a; }
+.dens-input--password { padding-right:48px; }
+.dens-password-toggle { position:absolute; right:10px; width:32px; height:32px; border:0; background:transparent; border-radius:50%; cursor:pointer; font-size:16px; color:#666; }
+.dens-password-toggle:hover { background:rgba(0,0,0,.05); }
+.dens-field-error { display:inline-block; margin-top:8px; font-size:13px; color:var(--dens-danger); }
+.dens-actions { margin-top:16px; }
+.dens-submit { width:100%; min-height:44px; border:0; border-radius:9px; background:var(--dens-primary); color:#fff; font-size:16px; font-weight:600; cursor:pointer; transition:background .15s ease; }
+.dens-submit:hover { background:var(--dens-primary-hover); }
+.dens-demo { margin-top:24px; padding:18px 18px 16px; background:#f3f3f3; border-radius:var(--dens-radius-demo); color:#5f5f5f; }
+.dens-demo__title { font-size:15px; font-weight:600; margin-bottom:10px; }
+.dens-demo__row { font-size:14px; line-height:1.45; }
+.dens-footer { width:100%; max-width:440px; text-align:center; margin-top:30px; font-size:14px; color:#666; }
+@media (max-width:560px) {
+  .dens-shell { padding:28px 16px 28px; }
+  .dens-brand { margin-bottom:24px; }
+  .dens-card { padding:20px 16px; }
+  .dens-brand__title { font-size:20px; }
+  .dens-footer { font-size:13px; }
+}

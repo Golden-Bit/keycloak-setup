@@ -18,10 +18,7 @@ services:
       retries: 10
 
   keycloak:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    image: keycloak-setup-local:24.0-themed
+    image: quay.io/keycloak/keycloak:24.0
     container_name: keycloak
     restart: unless-stopped
     depends_on:
