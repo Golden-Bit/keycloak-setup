@@ -1,5 +1,5 @@
 :root {
-  --dens-bg: #ffffff;
+  --dens-page-bg: #ffffff;
   --dens-card-bg: #ffffff;
   --dens-text: #171717;
   --dens-muted: #666666;
@@ -18,35 +18,15 @@
 html,
 body,
 body.dens-login-body,
-body.login-pf,
 .login-pf,
-.login-pf body,
 .login-pf-page,
+.kcBodyClass,
 #kc-bg,
 #kc-bg::before,
 #kc-bg::after,
-#keycloak-bg,
-#keycloak-bg::before,
-#keycloak-bg::after,
-#kc-header,
-#kc-header-wrapper,
-#kc-content,
-#kc-content-wrapper,
-#kc-container,
-#kc-container-wrapper,
-#kc-locale,
-#kc-locale-wrapper,
-.pf-v5-c-login,
-.pf-v5-c-login__container,
-.pf-v5-c-login__main,
-.pf-v5-c-login__main-body,
-.pf-v5-c-background-image,
-.pf-v5-c-background-image::before,
-.pf-v5-c-background-image::after,
-.pf-c-login,
-.pf-c-login__main,
-.pf-c-login__main-body,
-.kcBodyClass {
+.login-pf body,
+.login-pf-page::before,
+.login-pf-page::after {
   margin: 0 !important;
   padding: 0 !important;
   min-height: 100%;
@@ -59,35 +39,23 @@ body.login-pf,
   -moz-osx-font-smoothing: grayscale;
 }
 
-body::before,
-body::after,
 body.dens-login-body::before,
 body.dens-login-body::after,
 .login-pf-page::before,
-.login-pf-page::after,
-.pf-v5-c-background-image::before,
-.pf-v5-c-background-image::after,
-.pf-c-login::before,
-.pf-c-login::after {
+.login-pf-page::after {
   content: none !important;
   display: none !important;
-  background: none !important;
-  background-image: none !important;
 }
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
-.dens-login-body {
+body.dens-login-body {
   min-height: 100vh;
-}
-
-.dens-page-bg {
-  position: fixed;
-  inset: 0;
-  background: #ffffff;
-  z-index: -1;
+  width: 100%;
 }
 
 .dens-shell {
@@ -97,16 +65,15 @@ body.dens-login-body::after,
   align-items: center;
   justify-content: center;
   padding: 24px 16px;
-  background: #ffffff !important;
+  background: #ffffff;
 }
 
 .dens-stack {
   width: 100%;
-  max-width: 412px;
+  max-width: 410px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  background: transparent;
 }
 
 .dens-brand {
@@ -119,9 +86,9 @@ body.dens-login-body::after,
 }
 
 .dens-brand__icon {
-  width: 50px;
-  height: 50px;
-  flex: 0 0 50px;
+  width: 58px;
+  height: 58px;
+  flex: 0 0 58px;
 }
 
 .dens-brand__copy {
@@ -142,7 +109,7 @@ body.dens-login-body::after,
 .dens-brand__subtitle {
   margin-top: 4px;
   font-size: 14px;
-  line-height: 1.3;
+  line-height: 1.35;
   font-weight: 400;
   color: #737373;
 }
@@ -161,8 +128,8 @@ body.dens-login-body::after,
 }
 
 .dens-back:hover {
-  text-decoration: none;
   color: #5c524e;
+  text-decoration: none;
 }
 
 .dens-back__arrow {
@@ -217,14 +184,39 @@ body.dens-login-body::after,
   line-height: 1.5;
 }
 
-.dens-alert--error { background: #fff1f2; border: 1px solid #fecdd3; color: #9f1239; }
-.dens-alert--success { background: #ecfdf5; border: 1px solid #a7f3d0; color: #065f46; }
-.dens-alert--warning { background: #fff7ed; border: 1px solid #fed7aa; color: #9a3412; }
-.dens-alert--info { background: #eff6ff; border: 1px solid #bfdbfe; color: #1d4ed8; }
+.dens-alert--error {
+  background: #fff1f2;
+  border: 1px solid #fecdd3;
+  color: #9f1239;
+}
+
+.dens-alert--success {
+  background: #ecfdf5;
+  border: 1px solid #a7f3d0;
+  color: #065f46;
+}
+
+.dens-alert--warning {
+  background: #fff7ed;
+  border: 1px solid #fed7aa;
+  color: #9a3412;
+}
+
+.dens-alert--info {
+  background: #eff6ff;
+  border: 1px solid #bfdbfe;
+  color: #1d4ed8;
+}
 
 .dens-form,
 .dens-form--register {
   display: block;
+  width: 100%;
+}
+
+.dens-field,
+.dens-kc-field {
+  width: 100%;
 }
 
 .dens-field + .dens-field,
@@ -234,11 +226,11 @@ body.dens-login-body::after,
 
 .dens-label,
 .pf-c-form__label,
-.pf-c-form__label-text,
 .pf-v5-c-form__label,
+.pf-c-form__label-text,
 .pf-v5-c-form__label-text,
-#kc-register-form label {
-  display: block;
+label {
+  display: inline-block;
   margin-bottom: 8px;
   font-size: 14px;
   line-height: 1.4;
@@ -246,10 +238,35 @@ body.dens-login-body::after,
   color: #111111;
 }
 
+.dens-form--register .row,
+.dens-form--register [class*="col-"],
+.dens-form--register .pf-c-form,
+.dens-form--register .pf-v5-c-form,
+.dens-form--register .pf-c-form__group,
+.dens-form--register .pf-v5-c-form__group,
+.dens-form--register .pf-c-form__group-control,
+.dens-form--register .pf-v5-c-form__group-control,
+.dens-form--register .form-group {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  float: none !important;
+  flex: none !important;
+}
+
+.dens-form--register .pf-c-form__group + .pf-c-form__group,
+.dens-form--register .pf-v5-c-form__group + .pf-v5-c-form__group,
+.dens-form--register .form-group + .form-group {
+  margin-top: 14px !important;
+}
+
 .dens-input-wrap {
   position: relative;
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  width: 100%;
   min-height: 46px;
   border: 1px solid var(--dens-border-strong);
   border-radius: var(--dens-radius-input);
@@ -269,8 +286,6 @@ body.dens-login-body::after,
 .dens-input-icon {
   position: absolute;
   left: 14px;
-  top: 50%;
-  transform: translateY(-50%);
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -287,65 +302,74 @@ body.dens-login-body::after,
 
 .dens-input,
 .dens-plain-input,
-.pf-c-form-control,
-.pf-v5-c-form-control,
-.form-control,
-textarea.pf-c-form-control,
-select.pf-c-form-control,
-#kc-register-form input[type="text"],
-#kc-register-form input[type="email"],
-#kc-register-form input[type="password"],
-#kc-register-form select,
-#kc-register-form textarea {
-  width: 100% !important;
-  min-width: 0;
-  min-height: 46px;
-  border: 1px solid var(--dens-border-strong);
-  outline: 0;
-  background: #ffffff !important;
-  padding: 0 14px;
-  font-size: 15px;
-  line-height: 1.5;
-  font-weight: 400;
-  color: #171717;
-  box-sizing: border-box;
-  border-radius: var(--dens-radius-input);
-  box-shadow: none;
-  appearance: none;
+.dens-form--register .pf-c-form-control,
+.dens-form--register .pf-v5-c-form-control,
+.dens-form--register input[type="text"],
+.dens-form--register input[type="email"],
+.dens-form--register input[type="password"],
+.dens-form--register input[type="tel"],
+.dens-form--register input[type="number"],
+.dens-form--register input[type="search"],
+.dens-form--register input[type="url"],
+.dens-form--register select,
+.dens-form--register textarea {
   display: block;
+  width: 100% !important;
+  min-height: 46px !important;
+  border: 1px solid var(--dens-border-strong) !important;
+  border-radius: var(--dens-radius-input) !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: #ffffff !important;
+  padding: 0 14px !important;
+  font-size: 16px !important;
+  line-height: 1.4 !important;
+  color: #111111 !important;
+  font-family: var(--dens-font) !important;
+  appearance: none;
 }
 
 .dens-input {
-  flex: 1 1 auto;
-  border: 0;
+  border: 0 !important;
   background: transparent !important;
-  padding: 0 42px 0 42px;
-  min-height: 44px;
+  padding: 0 14px 0 44px !important;
+}
+
+.dens-plain-input {
+  border: 0 !important;
+  background: transparent !important;
+  padding: 0 44px 0 14px !important;
+}
+
+.dens-input--password {
+  padding-right: 44px !important;
+}
+
+.dens-form--register textarea {
+  min-height: 96px !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+  resize: vertical;
+}
+
+.dens-form--register select {
+  padding-right: 36px !important;
+}
+
+.dens-form--register .pf-c-form-control:focus,
+.dens-form--register .pf-v5-c-form-control:focus,
+.dens-form--register input:focus,
+.dens-form--register select:focus,
+.dens-form--register textarea:focus {
+  border-color: var(--dens-primary) !important;
+  box-shadow: 0 0 0 3px var(--dens-focus) !important;
 }
 
 .dens-input::placeholder,
 .dens-plain-input::placeholder,
-.pf-c-form-control::placeholder,
-.pf-v5-c-form-control::placeholder,
-.form-control::placeholder {
-  color: #a3a3a3;
-}
-
-.dens-input--password {
-  padding-right: 44px;
-}
-
-.dens-plain-input:focus,
-.pf-c-form-control:focus,
-.pf-v5-c-form-control:focus,
-.form-control:focus,
-textarea.pf-c-form-control:focus,
-select.pf-c-form-control:focus,
-#kc-register-form input:focus,
-#kc-register-form select:focus,
-#kc-register-form textarea:focus {
-  border-color: var(--dens-primary);
-  box-shadow: 0 0 0 3px var(--dens-focus);
+.dens-form--register input::placeholder,
+.dens-form--register textarea::placeholder {
+  color: #9a9a9a;
 }
 
 input:-webkit-autofill,
@@ -353,224 +377,164 @@ input:-webkit-autofill:hover,
 input:-webkit-autofill:focus,
 textarea:-webkit-autofill,
 select:-webkit-autofill {
-  -webkit-text-fill-color: #171717;
-  -webkit-box-shadow: 0 0 0px 1000px #ffffff inset;
-  transition: background-color 9999s ease-in-out 0s;
+  -webkit-text-fill-color: #111111 !important;
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  transition: background-color 9999s ease-out 0s;
 }
 
 .dens-password-toggle {
   position: absolute;
   right: 10px;
-  top: 50%;
-  transform: translateY(-50%);
   width: 28px;
   height: 28px;
   border: 0;
   background: transparent;
   border-radius: 50%;
   cursor: pointer;
-  font-size: 14px;
-  color: #737373;
+  color: #777;
 }
 
 .dens-password-toggle:hover {
   background: rgba(0, 0, 0, 0.05);
 }
 
-.dens-field-error,
-.pf-c-form__helper-text.pf-m-error,
-.required.kc-feedback-text,
-.help-block {
+.dens-eye {
   display: inline-block;
+  width: 16px;
+  height: 10px;
+  border: 1.6px solid currentColor;
+  border-radius: 12px / 8px;
+  position: relative;
+}
+
+.dens-eye::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  width: 4px;
+  height: 4px;
+  border-radius: 50%;
+  background: currentColor;
+  transform: translate(-50%, -50%);
+}
+
+.dens-field-error,
+.pf-c-form__helper-text,
+.pf-v5-c-form__helper-text,
+.pf-c-form__helper-text-item,
+.pf-v5-c-form__helper-text-item {
+  display: block;
   margin-top: 8px;
   font-size: 13px;
   line-height: 1.4;
   color: var(--dens-danger);
 }
 
-.dens-form-meta {
+.dens-form-links {
   margin-top: 12px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 12px;
-  flex-wrap: wrap;
 }
 
-.dens-checkbox {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 14px;
-  color: #555;
-}
-
-.dens-checkbox input {
-  margin: 0;
-}
-
-.dens-actions { margin-top: 16px; }
-
-.dens-submit,
-button[type="submit"].pf-c-button,
-input[type="submit"].pf-c-button {
-  width: 100%;
-  min-height: 44px;
-  border: 0;
-  border-radius: 10px;
-  background: var(--dens-primary);
-  color: #ffffff;
-  font-size: 15px;
-  line-height: 1.5;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background 0.15s ease;
-  padding: 10px 16px;
-}
-
-.dens-submit:hover,
-button[type="submit"].pf-c-button:hover,
-input[type="submit"].pf-c-button:hover {
-  background: var(--dens-primary-hover);
+.dens-form-links--top {
+  text-align: right;
 }
 
 .dens-inline-link {
   color: var(--dens-primary);
   text-decoration: none;
   font-size: 14px;
-  line-height: 1.5;
   font-weight: 500;
 }
 
-.dens-inline-link:hover { text-decoration: underline; }
+.dens-inline-link:hover {
+  text-decoration: underline;
+}
+
+.dens-actions {
+  margin-top: 16px;
+}
+
+.dens-submit {
+  width: 100%;
+  min-height: 46px;
+  border: 0;
+  border-radius: 10px;
+  background: var(--dens-primary);
+  color: #ffffff;
+  font-size: 16px;
+  line-height: 1.3;
+  font-weight: 600;
+  font-family: var(--dens-font);
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.dens-submit:hover {
+  background: var(--dens-primary-hover);
+}
+
+.dens-submit--link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-decoration: none;
+}
+
+.dens-check {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 12px;
+  font-size: 14px;
+  color: #555;
+}
+
+.dens-check input[type="checkbox"] {
+  width: 16px;
+  height: 16px;
+  margin: 0;
+}
 
 .dens-register {
   margin-top: 18px;
   text-align: center;
   font-size: 14px;
-  line-height: 1.5;
-  color: #666666;
+  color: #666;
 }
 
 .dens-register--back {
-  margin-top: 16px;
-}
-
-.dens-card__info {
-  margin-top: 8px;
-}
-
-.dens-info-message {
-  text-align: center;
-}
-
-.dens-info-message__header {
-  margin-bottom: 8px;
-  font-size: 15px;
-  line-height: 1.5;
-  font-weight: 500;
-  color: #171717;
-}
-
-.dens-info-message__body {
-  font-size: 14px;
-  line-height: 1.5;
-  color: #666666;
+  text-align: left;
 }
 
 .dens-footer {
   width: 100%;
+  margin-top: 30px;
   text-align: center;
-  margin-top: 28px;
-  font-size: 13px;
-  line-height: 1.5;
-  color: #737373;
-}
-
-.pf-c-form__helper-text,
-.pf-c-form__helper-text-before,
-.pf-c-form__helper-text-after,
-.pf-v5-c-helper-text,
-.pf-v5-c-form__helper-text {
-  font-size: 13px;
-  color: #737373;
-  margin-top: 6px;
-}
-
-.pf-c-check,
-.pf-c-radio,
-.pf-v5-c-check,
-.pf-v5-c-radio {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-top: 6px;
-}
-
-.pf-c-check__label,
-.pf-c-radio__label,
-.pf-v5-c-check__label,
-.pf-v5-c-radio__label {
   font-size: 14px;
-  color: #555;
+  line-height: 1.5;
+  color: #666666;
+}
+
+.dens-info-block {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.dens-info-list {
+  margin: 0;
+  padding-left: 18px;
+  color: #444;
 }
 
 .g-recaptcha {
-  margin-top: 6px;
-}
-
-/* Registration-specific cleanup */
-#kc-register-form {
-  width: 100%;
-}
-
-#kc-register-form .pf-v5-c-form,
-#kc-register-form .pf-c-form,
-#kc-register-form .form-group,
-#kc-register-form .form-group:before,
-#kc-register-form .form-group:after {
-  width: 100%;
-}
-
-.dens-form--register .dens-field,
-.dens-form--register .dens-kc-field {
-  margin-top: 0;
-}
-
-.dens-form--register > .dens-field + .dens-field,
-.dens-form--register > .dens-field-grid + .dens-field,
-.dens-form--register > .dens-field + .dens-field-grid,
-.dens-form--register > .dens-field-grid + .dens-field-grid,
-.dens-form--register > .dens-kc-field,
-.dens-form--register > .dens-actions,
-.dens-form--register > .dens-register {
-  margin-top: 16px;
-}
-
-.dens-field-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 16px;
-}
-
-.dens-form--register .dens-field--full,
-.dens-form--register .dens-field--full .dens-plain-input {
-  width: 100%;
-}
-
-.dens-form--register .dens-input-wrap,
-.dens-form--register .dens-plain-input,
-.dens-form--register .dens-input {
-  width: 100%;
+  max-width: 100%;
+  overflow: hidden;
 }
 
 @media (max-width: 560px) {
   .dens-shell {
-    padding: 20px 12px;
-  }
-
-  .dens-stack {
-    max-width: 100%;
+    padding: 28px 16px;
   }
 
   .dens-brand {
@@ -585,14 +549,7 @@ input[type="submit"].pf-c-button:hover {
     padding: 20px 16px;
   }
 
-  .dens-form-meta {
-    align-items: flex-start;
-    flex-direction: column;
-  }
-}
-
-@media (min-width: 640px) {
-  .dens-field-grid--two {
-    grid-template-columns: 1fr 1fr;
+  .dens-footer {
+    font-size: 13px;
   }
 }

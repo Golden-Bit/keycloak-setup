@@ -2,21 +2,26 @@
 
 <@layout.registrationLayout displayMessage=false; section>
     <#if section = "header">
-        ${msg("infoTitle")}
+        ${messageHeader!msg("infoTitle")}
     <#elseif section = "subtitle">
-        ${msg("infoSubtitle")}
+        ${messageSummary!msg("infoSubtitle")}
     <#elseif section = "form">
-        <div class="dens-info-message">
-            <#if messageHeader??>
-                <p class="dens-info-message__header">${kcSanitize(messageHeader)?no_esc}</p>
+        <div class="dens-info-block">
+            <#if requiredActions??>
+                <ul class="dens-info-list">
+                    <#list requiredActions as reqActionItem>
+                        <li>${kcSanitize(msg("requiredAction.${reqActionItem}"))?no_esc}</li>
+                    </#list>
+                </ul>
             </#if>
-            <#if message.summary??>
-                <div class="dens-info-message__body">${kcSanitize(message.summary)?no_esc}</div>
-            </#if>
-        </div>
 
-        <div class="dens-register dens-register--back">
-            <a class="dens-inline-link" href="${url.loginUrl}">${kcSanitize(msg("backToLogin"))?no_esc}</a>
+            <#if pageRedirectUri?has_content>
+                <a class="dens-submit dens-submit--link" href="${pageRedirectUri}">${msg("backToApplication")}</a>
+            <#elseif actionUri?has_content>
+                <a class="dens-submit dens-submit--link" href="${actionUri}">${msg("proceedWithAction")}</a>
+            <#elseif client.baseUrl?has_content>
+                <a class="dens-submit dens-submit--link" href="${client.baseUrl}">${msg("backToApplication")}</a>
+            </#if>
         </div>
     </#if>
 </@layout.registrationLayout>

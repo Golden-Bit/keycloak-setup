@@ -6,7 +6,6 @@
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="robots" content="noindex, nofollow">
     <meta name="viewport" content="width=device-width,initial-scale=1">
-    <meta name="color-scheme" content="light">
 
     <#if properties.meta?has_content>
         <#list properties.meta?split(' ') as meta>
@@ -35,7 +34,6 @@
     </#if>
 </head>
 <body class="dens-login-body ${bodyClass!}">
-    <div class="dens-page-bg" aria-hidden="true"></div>
     <div class="dens-shell">
         <div class="dens-stack">
             <div class="dens-brand" aria-label="${msg('brandTitle')}">
@@ -62,7 +60,7 @@
                     <h1 class="dens-card__title"><#nested "header"></h1>
                     <p class="dens-card__subtitle"><#attempt><#nested "subtitle"><#recover>${msg("loginSubtitle")}</#attempt></p>
                     <#if displayRequiredFields>
-                        <p class="dens-required-note">* ${msg("requiredFields")}</p>
+                        <p class="dens-required-note">${msg("requiredFieldsText")}</p>
                     </#if>
                 </header>
 
