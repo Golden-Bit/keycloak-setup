@@ -1,36 +1,39 @@
-# SECURITY
+# Security
 
-## Hardening minimo consigliato
+## Superficie esposta
 
-### Superficie esposta
-- esporre pubblicamente solo 80 e 443
-- non esporre 8080 e 5432
-- mantenere Keycloak bindato su `127.0.0.1:8080`
+Esponi solo le porte necessarie:
 
-### Segreti
-- non committare `.env`
-- usare permessi restrittivi (`chmod 600 .env`)
-- ruotare periodicamente password DB e admin
+- 80 e 443 verso l'esterno;
+- 8080 e 5432 non devono essere pubbliche.
 
-### Reverse proxy / TLS
-- forzare HTTPS
-- validare correttamente `KC_HOSTNAME`
-- verificare gli header forwarded
+## Segreti
 
-### Admin console
-- limitare accesso amministrativo per IP/VPN
-- usare password robuste
-- abilitare controlli aggiuntivi dove possibile
+- non versionare `.env`;
+- proteggi il file con permessi restrittivi;
+- valuta secret manager se l'ambiente lo richiede;
+- ruota periodicamente password admin e database.
 
-### Backup
-- backup prima di ogni update importante
-- test periodici di restore
+## Reverse proxy e TLS
 
-### Operazioni distruttive da evitare
-Non usare in produzione senza piano esplicito:
+- usa HTTPS in produzione;
+- verifica header corretti dal proxy;
+- valuta HSTS quando l'ambiente è stabile.
 
-```bash
-docker compose down -v
-docker volume prune
-docker system prune --volumes
-```
+## Accesso amministrativo
+
+- limita l'accesso alla console admin;
+- applica regole IP, VPN o altri livelli di controllo;
+- abilita misure forti di autenticazione dove applicabili.
+
+## Backup e recovery
+
+- esegui backup regolari del database;
+- testa periodicamente i restore;
+- conserva copie dei backup fuori dal solo host applicativo.
+
+## Aggiornamenti
+
+- evita tag non pinati;
+- fai backup prima degli upgrade;
+- verifica changelog e compatibilità.

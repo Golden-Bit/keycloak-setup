@@ -1,69 +1,74 @@
-# OPERATIONS
+# Operazioni quotidiane
 
-## Obiettivo
-Raccogliere i comandi operativi quotidiani più utili.
+Questa guida raccoglie i comandi più utili per la gestione ordinaria dello stack.
 
----
-
-## Stato stack
+## Stato servizi
 
 ```bash
-cd /opt/keycloak
 docker compose ps
 ```
 
-## Logs Keycloak
+## Log applicativi
+
+Script disponibile:
 
 ```bash
-cd /opt/keycloak
+./scripts/logs.sh
+```
+
+Oppure direttamente:
+
+```bash
 docker compose logs --tail=200 keycloak
-```
-
-## Logs Postgres
-
-```bash
-cd /opt/keycloak
 docker compose logs --tail=200 postgres
-```
-
-## Logs continui
-
-```bash
-cd /opt/keycloak
-docker compose logs -f keycloak
 ```
 
 ## Healthcheck
 
 ```bash
-cd /opt/keycloak
 ./scripts/healthcheck.sh
 ```
 
-## Backup
+## Update controllato
 
 ```bash
-cd /opt/keycloak
-./scripts/backup_db.sh
-```
-
-## Update
-
-```bash
-cd /opt/keycloak
 ./scripts/update.sh
 ```
 
-## Sync repo sorgente -> deploy
+Lo script:
+
+- mostra lo stato dello stack;
+- aggiorna le immagini remote necessarie;
+- rebuilda il servizio Keycloak locale;
+- rialza lo stack.
+
+## Riavvio manuale
 
 ```bash
-/home/ubuntu/keyklock-setup/scripts/sync-keycloak-repo.sh
+docker compose restart keycloak
+docker compose restart postgres
 ```
 
-## Svuotare cache tema
+## Rebuild Keycloak
 
 ```bash
-cd /opt/keycloak
+docker compose build keycloak
+docker compose up -d
+```
+
+## Cache risorse UI
+
+```bash
 docker compose exec keycloak rm -rf /opt/keycloak/data/tmp/kc-gzip-cache
 docker compose restart keycloak
 ```
+
+## Controlli post-rilascio
+
+Dopo un rilascio verifica:
+
+- `docker compose ps`
+- log Keycloak
+- log Postgres
+- accesso HTTP locale
+- accesso pubblico tramite Nginx

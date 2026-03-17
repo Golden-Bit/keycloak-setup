@@ -1,48 +1,62 @@
-# DEPLOYMENT
+# Deployment
+
+Questa guida descrive il deploy standard del repository su un host Ubuntu con Docker Compose, Nginx e systemd.
 
 ## Obiettivo
-Questa guida descrive il flusso corretto per:
-- deploy iniziale
-- sincronizzazione repo sorgente -> repo deploy
-- rebuild controllato di Keycloak
-- rollback operativo minimo
 
----
+L'obiettivo è ottenere:
 
-## Path attuali
+- un database PostgreSQL persistente;
+- un servizio Keycloak eseguito in container;
+- un reverse proxy Nginx su 80/443;
+- una procedura di rilascio ripetibile basata sul repository.
 
-- repo sorgente: `/home/ubuntu/keyklock-setup`
-- repo deploy: `/opt/keycloak`
+## Prerequisiti
 
-La cartella in `/opt/keycloak` è quella da cui vengono eseguiti:
-- `docker compose`
+Verifica prima di iniziare:
+
+- Docker Engine installato;
+- Docker Compose plugin disponibile;
+- Nginx installato o installabile;
+- DNS del dominio pubblico corretto;
+- porte 80/443 aperte;
+- repository presente sia come sorgente di lavoro sia come copia deployabile.
+
+## Directory di lavoro e di deploy
+
+Flusso raccomandato:
+
+- copia sorgente: usata per modifiche, versionamento e revisione;
+- copia di deploy: usata per `docker compose build`, `up`, `logs`, `backup`, `restore`.
+
+La directory di deploy deve essere coerente con:
+
 - `systemd`
-- backup/restore
-- update operativo
+- eventuali script di sync
+- comandi operativi lanciati dal team
 
----
+## Configurazione ambiente
 
-## Deploy iniziale
-
-### 1) Preparare `.env`
+1. Copia `.env.example` in `.env`
+2. Imposta i valori reali
+3. Proteggi il file con permessi restrittivi
 
 ```bash
-cd /opt/keycloak
 cp .env.example .env
 chmod 600 .env
-nano .env
 ```
 
-### 2) Build e startup
+## Build e avvio iniziale
 
 ```bash
-cd /opt/keycloak
 docker compose build keycloak
 docker compose up -d
 docker compose ps
 ```
 
-### 3) Verifiche iniziali
+## Verifiche iniziali
+
+Controlli minimi:
 
 ```bash
 curl -I http://127.0.0.1:8080/
@@ -50,92 +64,69 @@ docker compose logs --tail=200 keycloak
 docker compose logs --tail=200 postgres
 ```
 
----
+Controlla che:
 
-## Flusso aggiornamento standard
+- Postgres sia healthy;
+- Keycloak parta senza errori gravi;
+- la porta 8080 sia raggiungibile solo in locale.
 
-### 1) Modifica repo sorgente
-Lavora in:
+## Abilitazione reverse proxy
 
-```text
-/home/ubuntu/keyklock-setup
-```
+Dopo l'avvio dei container:
 
-### 2) Sincronizza verso il deploy path
+1. installa o verifica Nginx;
+2. copia il file vhost;
+3. abilita il sito;
+4. testa la configurazione;
+5. ricarica Nginx.
+
+Per i dettagli vedi `NGINX_TLS.md`.
+
+## TLS
+
+Una volta verificato l'accesso HTTP, abilita TLS con:
+
+- Certbot
+- oppure certificato aziendale
+
+## Abilitazione systemd
+
+Il service file permette l'avvio automatico dopo reboot. Prima di abilitarlo controlla:
+
+- `WorkingDirectory`
+- percorso reale di `docker compose`
+- coerenza con la directory di deploy
+
+Per i dettagli vedi `SYSTEMD.md`.
+
+## Deploy successivi
+
+Per i rilasci successivi:
+
+1. sincronizza il repository verso la directory di deploy;
+2. fai un backup del database;
+3. rebuilda Keycloak;
+4. riavvia lo stack;
+5. controlla log e stato.
+
+## Comandi consigliati
 
 ```bash
-/home/ubuntu/keyklock-setup/scripts/sync-keycloak-repo.sh
-```
-
-### 3) Backup prudenziale
-
-```bash
-cd /opt/keycloak
 ./scripts/backup_db.sh
-```
-
-### 4) Applica update
-
-```bash
-cd /opt/keycloak
-./scripts/update.sh
-```
-
----
-
-## Rollout manuale equivalente
-
-```bash
-cd /opt/keycloak
-docker compose pull postgres
-docker compose build --pull keycloak
+docker compose build keycloak
 docker compose up -d
+docker compose logs --tail=200 keycloak
 ```
 
----
+## Attenzioni operative
 
-## Cache tema
+Non usare comandi distruttivi sui volumi durante un normale deploy.
 
-Se il cambiamento riguarda il tema e non si riflette subito:
-
-```bash
-cd /opt/keycloak
-docker compose exec keycloak rm -rf /opt/keycloak/data/tmp/kc-gzip-cache
-docker compose restart keycloak
-```
-
----
-
-## Rollback minimo
-
-### Caso A - rollback file repo
-Ripristina il repository sorgente a una revisione precedente e sincronizza di nuovo:
-
-```bash
-cd /home/ubuntu/keyklock-setup
-# git checkout <tag-o-commit>
-./scripts/sync-keycloak-repo.sh
-cd /opt/keycloak
-./scripts/update.sh
-```
-
-### Caso B - rollback DB
-Solo se strettamente necessario:
-
-```bash
-cd /opt/keycloak
-./scripts/restore_db.sh backups/<backup>.sql
-```
-
----
-
-## Cose da NON fare
-
-Non usare:
+Evita:
 
 ```bash
 docker compose down -v
 docker volume prune
 ```
 
-perché possono rimuovere i volumi persistenti.
+Questi comandi possono rimuovere la persistenza del database o dei dati runtime.
