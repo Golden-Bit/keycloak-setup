@@ -72,11 +72,12 @@
                         type="button"
                         class="dens-password-toggle"
                         data-password-toggle
-                        aria-label="Mostra o nascondi password"
+                        data-password-target="password"
+                        aria-label="${msg('togglePasswordLabel')}"
                         aria-controls="password"
                         aria-pressed="false"
                     >
-                        <span aria-hidden="true">👁</span>
+                        <span class="dens-eye" aria-hidden="true"></span>
                     </button>
                 </div>
 
@@ -87,19 +88,7 @@
                 </#if>
             </div>
 
-            <div class="dens-form-meta">
-                <#if realm.rememberMe && !usernameHidden??>
-                    <label class="dens-checkbox">
-                        <input
-                            type="checkbox"
-                            id="rememberMe"
-                            name="rememberMe"
-                            <#if login.rememberMe??>checked</#if>
-                        />
-                        <span>${msg("rememberMe")}</span>
-                    </label>
-                </#if>
-
+            <div class="dens-form-links dens-form-links--top">
                 <#if realm.resetPasswordAllowed>
                     <a class="dens-inline-link" href="${url.loginResetCredentialsUrl}">
                         ${msg("doForgotPassword")}
@@ -107,27 +96,17 @@
                 </#if>
             </div>
 
-            <input type="hidden" id="id-hidden-input" name="credentialId"
-                <#if auth.selectedCredential?has_content>value="${auth.selectedCredential}"</#if>/>
-
             <div class="dens-actions">
                 <button class="dens-submit" id="kc-login" name="login" type="submit">
                     ${msg("doLogIn")}
                 </button>
             </div>
 
-            <#if (properties.densShowDemoCredentials!'false') == 'true'>
-                <div class="dens-demo">
-                    <div class="dens-demo__title">${msg("demoCredentialsTitle")}</div>
-
-                    <#if properties.densDemoEmail?? && properties.densDemoEmail?has_content>
-                        <div class="dens-demo__row">${msg("email")}: ${properties.densDemoEmail}</div>
-                    </#if>
-
-                    <#if properties.densDemoPassword?? && properties.densDemoPassword?has_content>
-                        <div class="dens-demo__row">${msg("password")}: ${properties.densDemoPassword}</div>
-                    </#if>
-                </div>
+            <#if realm.rememberMe && !usernameHidden??>
+                <label class="dens-check">
+                    <input id="rememberMe" name="rememberMe" type="checkbox" <#if login.rememberMe??>checked</#if> />
+                    <span>${msg("rememberMe")}</span>
+                </label>
             </#if>
         </form>
 
