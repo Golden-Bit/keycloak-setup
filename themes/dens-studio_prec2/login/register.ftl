@@ -12,12 +12,12 @@
         <form id="kc-register-form" class="dens-form dens-form--register" action="${url.registrationAction}" method="post">
             <@userProfileCommons.userProfileFormFields; callback, attribute>
                 <#if callback = "beforeField">
-                    <div class="dens-kc-field dens-kc-field--attribute" <#if attribute.name??>data-attribute-name="${attribute.name}"</#if>>
+                    <div class="dens-kc-field">
                 <#elseif callback = "afterField">
                     </div>
 
                     <#if passwordRequired?? && (attribute.name == 'username' || (attribute.name == 'email' && realm.registrationEmailAsUsername))>
-                        <div class="dens-kc-field dens-kc-field--password" data-attribute-name="password">
+                        <div class="dens-kc-field">
                             <label class="dens-label" for="password">${msg("password")}</label>
                             <div class="dens-input-wrap <#if messagesPerField.existsError('password')>is-error</#if>">
                                 <input
@@ -45,7 +45,7 @@
                             </#if>
                         </div>
 
-                        <div class="dens-kc-field dens-kc-field--password" data-attribute-name="password-confirm">
+                        <div class="dens-kc-field">
                             <label class="dens-label" for="password-confirm">${msg("passwordConfirm")}</label>
                             <div class="dens-input-wrap <#if messagesPerField.existsError('password-confirm')>is-error</#if>">
                                 <input
@@ -76,12 +76,12 @@
                 </#if>
             </@userProfileCommons.userProfileFormFields>
 
-            <div class="dens-kc-field dens-kc-field--terms">
+            <div class="dens-kc-field">
                 <@registerCommons.termsAcceptance/>
             </div>
 
             <#if recaptchaRequired??>
-                <div class="dens-kc-field dens-kc-field--recaptcha">
+                <div class="dens-kc-field">
                     <div class="g-recaptcha" data-sitekey="${recaptchaSiteKey}" data-action="${recaptchaAction}"></div>
                 </div>
             </#if>
