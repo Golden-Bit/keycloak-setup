@@ -4,24 +4,21 @@
 
 <@layout.registrationLayout displayMessage=messagesPerField.exists('global') displayRequiredFields=true; section>
     <#if section = "header">
-        <#if messageHeader??>
-            ${kcSanitize(msg("${messageHeader}"))?no_esc}
-        <#else>
-            ${msg("registerTitle")}
-        </#if>
+        ${msg("registerTitle")}
     <#elseif section = "subtitle">
         ${msg("registerSubtitle")}
     <#elseif section = "form">
 
         <form id="kc-register-form" class="dens-form dens-form--register" action="${url.registrationAction}" method="post">
             <@userProfileCommons.userProfileFormFields; callback, attribute>
-                <#if callback = "afterField">
+                <#if callback = "beforeField">
+                    <div class="dens-kc-field dens-kc-field--attribute" <#if attribute.name??>data-attribute-name="${attribute.name}"</#if>>
+                <#elseif callback = "afterField">
+                    </div>
+
                     <#if passwordRequired?? && (attribute.name == 'username' || (attribute.name == 'email' && realm.registrationEmailAsUsername))>
-                        <div class="dens-kc-field">
-                            <div class="dens-kc-label-wrap">
-                                <label class="dens-label" for="password">${msg("password")}</label>
-                                <span class="required">*</span>
-                            </div>
+                        <div class="dens-kc-field dens-kc-field--password" data-attribute-name="password">
+                            <label class="dens-label" for="password">${msg("password")}</label>
                             <div class="dens-input-wrap <#if messagesPerField.existsError('password')>is-error</#if>">
                                 <input
                                     type="password"
@@ -48,11 +45,8 @@
                             </#if>
                         </div>
 
-                        <div class="dens-kc-field">
-                            <div class="dens-kc-label-wrap">
-                                <label class="dens-label" for="password-confirm">${msg("passwordConfirm")}</label>
-                                <span class="required">*</span>
-                            </div>
+                        <div class="dens-kc-field dens-kc-field--password" data-attribute-name="password-confirm">
+                            <label class="dens-label" for="password-confirm">${msg("passwordConfirm")}</label>
                             <div class="dens-input-wrap <#if messagesPerField.existsError('password-confirm')>is-error</#if>">
                                 <input
                                     type="password"
@@ -82,7 +76,9 @@
                 </#if>
             </@userProfileCommons.userProfileFormFields>
 
-            <@registerCommons.termsAcceptance/>
+            <div class="dens-kc-field dens-kc-field--terms">
+                <@registerCommons.termsAcceptance/>
+            </div>
 
             <#if recaptchaRequired??>
                 <div class="dens-kc-field dens-kc-field--recaptcha">

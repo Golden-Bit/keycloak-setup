@@ -1,28 +1,36 @@
-# SECURITY / Hardening minimo
+# SECURITY
 
-## 1) Superficie esposta
-- Inbound AWS: aprire solo TCP 80/443.
-- NON esporre 8080 (Keycloak) e 5432 (PostgreSQL).
-- Mantenere Keycloak bindato su 127.0.0.1 tramite compose.
+## Hardening minimo consigliato
 
-## 2) TLS
-- Abilitare HTTPS (Let's Encrypt o certificato aziendale).
-- Forzare redirect HTTP->HTTPS.
-- Valutare HSTS dopo stabilizzazione.
+### Superficie esposta
+- esporre pubblicamente solo 80 e 443
+- non esporre 8080 e 5432
+- mantenere Keycloak bindato su `127.0.0.1:8080`
 
-## 3) Segreti
-- Non committare `.env`.
-- Preferire un Secret Manager (AWS Secrets Manager) e provisioning controllato.
-- Ruotare password DB/admin periodicamente.
+### Segreti
+- non committare `.env`
+- usare permessi restrittivi (`chmod 600 .env`)
+- ruotare periodicamente password DB e admin
 
-## 4) Backup e DR
-- Backup DB giornaliero + retention.
-- Test periodico restore in ambiente di staging.
+### Reverse proxy / TLS
+- forzare HTTPS
+- validare correttamente `KC_HOSTNAME`
+- verificare gli header forwarded
 
-## 5) Aggiornamenti
-- Pin delle versioni (no :latest).
-- Update con change log, finestra manutenzione, backup prima dell'upgrade.
+### Admin console
+- limitare accesso amministrativo per IP/VPN
+- usare password robuste
+- abilitare controlli aggiuntivi dove possibile
 
-## 6) Admin access
-- Limitare accesso alla Admin Console (IP allow-list / VPN / WAF).
-- Abilitare MFA/Conditional Access se disponibile.
+### Backup
+- backup prima di ogni update importante
+- test periodici di restore
+
+### Operazioni distruttive da evitare
+Non usare in produzione senza piano esplicito:
+
+```bash
+docker compose down -v
+docker volume prune
+docker system prune --volumes
+```

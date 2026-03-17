@@ -1,54 +1,129 @@
-# Keycloak Deploy (Docker Compose + Nginx)
-Data: 2026-01-15
+# Keycloak Setup (Docker Compose + Nginx + systemd + Custom Themes)
 
-Repository “operativo” per installare **Keycloak** su **Ubuntu** con:
-- **Docker Compose** (Keycloak + PostgreSQL)
-- **Nginx** reverse proxy (80/443) + TLS (Let's Encrypt)
-- **systemd** per avvio automatico
-- script per **backup/restore** e **healthcheck**
-- best practice DevOps (pin versioni, niente secret in Git, hardening minimo)
+Repository operativo per installare, aggiornare e gestire **Keycloak self-hosted** su **Ubuntu** con:
 
-> Nota: i segreti NON vanno versionati. Usa `.env` locale (ignorato da git) oppure un secret manager.
+- **Docker Compose** (`keycloak` + `postgres`)
+- **Nginx** reverse proxy su **80/443**
+- **systemd** per avvio automatico dello stack
+- **build locale** dell'immagine Keycloak con **temi custom** inclusi
+- script per **sync repo**, **backup/restore**, **healthcheck**, **logs** e **update**
+- struttura separata tra **repo sorgente** e **cartella deploy**
+
+Questo repository è pensato per il flusso operativo attuale:
+
+- **repo sorgente**: `/home/ubuntu/keyklock-setup`
+- **repo deployabile**: `/opt/keycloak`
+- la cartella in `/opt/keycloak` è quella da cui vengono eseguiti `docker compose` e il servizio `systemd`
+
+> I segreti **non vanno versionati**. Usa `.env` locale nella cartella deploy (`/opt/keycloak/.env`) oppure un secret manager.
 
 ---
 
-## 0) Struttura del repo
+## Architettura attuale
 
-```
-keycloak-ec2-deploy/
+### Componenti
+
+- **PostgreSQL 16** come database persistente di Keycloak
+- **Keycloak 24.0** buildato localmente da `Dockerfile`
+- **Nginx** come reverse proxy verso `127.0.0.1:8080`
+- **systemd** per avvio automatico del progetto Docker Compose
+- **Tema custom** sotto `themes/dens-studio/`
+
+### Persistenza
+
+I dati **non** stanno nel repository ma nei volumi Docker dichiarati in `docker-compose.yml`:
+
+- `postgres_data` → dati PostgreSQL
+- `keycloak_data` → dati runtime Keycloak, cache e tmp
+
+Questo significa che puoi aggiornare il repository, ricreare i container e rebuildare l'immagine **senza perdere realm, client, utenti e configurazioni**, purché **non rimuovi i volumi** e **non punti a un altro database**.
+
+> **Non usare** `docker compose down -v` in produzione, perché rimuove i volumi dichiarati nella Compose.
+
+---
+
+## Struttura del repository
+
+```text
+keyklock-setup/
+├─ Dockerfile
 ├─ docker-compose.yml
 ├─ .env.example
-├─ .gitignore
 ├─ README.md
-├─ nginx/
-│  └─ keycloak.conf
-├─ systemd/
-│  └─ keycloak-compose.service
-├─ scripts/
-│  ├─ backup_db.sh
-│  ├─ restore_db.sh
-│  ├─ update.sh
-│  ├─ healthcheck.sh
-│  └─ logs.sh
 ├─ backups/
 │  └─ .gitkeep
-└─ docs/
-   ├─ SECURITY.md
-   └─ TROUBLESHOOTING.md
+├─ docs/
+│  ├─ BACKUP_RESTORE.md
+│  ├─ DEPLOYMENT.md
+│  ├─ NGINX_TLS.md
+│  ├─ OPERATIONS.md
+│  ├─ SECURITY.md
+│  ├─ SYSTEMD.md
+│  ├─ THEMES.md
+│  └─ TROUBLESHOOTING.md
+├─ nginx/
+│  └─ keycloak.conf
+├─ scripts/
+│  ├─ backup_db.sh
+│  ├─ healthcheck.sh
+│  ├─ logs.sh
+│  ├─ restore_db.sh
+│  ├─ sync-keycloak-repo.sh
+│  └─ update.sh
+├─ systemd/
+│  └─ keycloak-compose.service
+└─ themes/
+   ├─ dens-studio/
+   ├─ dens-studio_prec/
+   └─ dens-studio_prec2/
 ```
 
 ---
 
-## 1) Prerequisiti (AWS + VM)
+## File chiave
 
-### DNS
-Crea un record A:
-- `auth.example.com` → Public IP (o Load Balancer)
+### `docker-compose.yml`
+Definisce:
+- `postgres`
+- `keycloak`
+- i volumi persistenti
+- il bind di Keycloak su `127.0.0.1:8080`
+
+### `Dockerfile`
+Costruisce localmente l'immagine Keycloak e copia dentro `/opt/keycloak/themes/` tutti i temi presenti nel repository.
+
+### `scripts/sync-keycloak-repo.sh`
+Sincronizza il repository sorgente locale verso la cartella deploy in `/opt/keycloak`:
+
+- sorgente: `/home/ubuntu/keyklock-setup`
+- destinazione: `/opt/keycloak`
+
+### `scripts/update.sh`
+Esegue l'update controllato dello stack:
+- `docker compose pull postgres`
+- `docker compose build --pull keycloak`
+- `docker compose up -d`
+
+### `systemd/keycloak-compose.service`
+Gestisce l'avvio automatico dello stack da `/opt/keycloak`.
 
 ---
 
-## 2) Installare Docker + Docker Compose (Ubuntu)
-Se Docker è già presente, salta.
+## Prerequisiti server
+
+- Ubuntu Server
+- Docker Engine
+- Docker Compose plugin
+- Nginx
+- DNS configurato verso il server
+- porte **80** e **443** raggiungibili dall'esterno
+- porta **8080 non esposta pubblicamente**
+
+---
+
+## Installazione Docker + Compose (Ubuntu)
+
+Se Docker non è già presente:
 
 ```bash
 sudo apt update
@@ -68,7 +143,8 @@ docker --version
 docker compose version
 ```
 
-Opzionale (evita `sudo` per docker):
+Opzionale:
+
 ```bash
 sudo usermod -aG docker $USER
 # logout/login
@@ -76,48 +152,100 @@ sudo usermod -aG docker $USER
 
 ---
 
-## 3) Configurazione: creare `.env` (segreti)
-1) Copia il template:
+## Configurazione iniziale
+
+### 1) Creare `.env`
+
+Nella cartella deploy (`/opt/keycloak`):
+
 ```bash
 cp .env.example .env
 chmod 600 .env
-```
-
-2) Modifica i valori (dominio e password):
-```bash
 nano .env
 ```
 
----
+Valori minimi da impostare:
 
-## 4) Avvio stack (Keycloak + Postgres)
-Dalla root del repo:
+- `KC_HOSTNAME`
+- `KEYCLOAK_ADMIN`
+- `KEYCLOAK_ADMIN_PASSWORD`
+- `POSTGRES_DB`
+- `POSTGRES_USER`
+- `POSTGRES_PASSWORD`
+- `TZ`
+
+### 2) Avvio stack
+
+Dalla root del progetto deployato:
 
 ```bash
-docker compose pull
+cd /opt/keycloak
+docker compose build keycloak
 docker compose up -d
 docker compose ps
 ```
 
-Verifica locale dal server:
+Verifica rapida:
+
 ```bash
 curl -I http://127.0.0.1:8080/
-docker logs --tail=200 keycloak
+docker compose logs --tail=200 keycloak
 ```
-
-> Il mapping è **solo** su `127.0.0.1:8080` per evitare esposizione pubblica diretta.
 
 ---
 
-## 5) Nginx reverse proxy (porta 80)
-Installa Nginx (se necessario):
-```bash
-sudo apt update
-sudo apt install -y nginx
-sudo systemctl enable --now nginx
+## Flusso operativo raccomandato
+
+### Modifica file nel repository sorgente
+
+Lavora sempre in:
+
+```text
+/home/ubuntu/keyklock-setup
 ```
 
-Installa il vhost:
+### Sincronizza verso la cartella deploy
+
+```bash
+/home/ubuntu/keyklock-setup/scripts/sync-keycloak-repo.sh
+```
+
+### Applica l'update dal deploy path
+
+```bash
+cd /opt/keycloak
+./scripts/update.sh
+```
+
+Questo è il flusso raccomandato per:
+- nuove versioni del tema
+- modifiche a `docker-compose.yml`
+- modifiche al `Dockerfile`
+- aggiornamenti script/documentazione
+
+---
+
+## Avvio automatico con systemd
+
+Installazione del servizio:
+
+```bash
+sudo cp systemd/keycloak-compose.service /etc/systemd/system/keycloak-compose.service
+sudo systemctl daemon-reload
+sudo systemctl enable --now keycloak-compose
+sudo systemctl status keycloak-compose --no-pager
+```
+
+Il servizio deve eseguire lo stack da `/opt/keycloak`.
+
+Per dettagli: vedi `docs/SYSTEMD.md`.
+
+---
+
+## Reverse proxy Nginx
+
+Installazione vhost:
+
 ```bash
 sudo cp nginx/keycloak.conf /etc/nginx/sites-available/keycloak
 sudo ln -sf /etc/nginx/sites-available/keycloak /etc/nginx/sites-enabled/keycloak
@@ -126,91 +254,172 @@ sudo nginx -t
 sudo systemctl reload nginx
 ```
 
-> `nginx/keycloak.conf` usa `server_name auth.example.com;`.
-> Cambialo se usi un altro dominio.
+Per TLS e Certbot: vedi `docs/NGINX_TLS.md`.
 
 ---
 
-## 6) TLS con Let’s Encrypt (Certbot)
-Prerequisiti:
-- DNS ok
-- inbound 80/443 ok
+## Temi custom
+
+I temi si trovano sotto:
+
+```text
+themes/
+```
+
+Ogni cartella è un tema separato. Il tema attivo oggi è pensato per essere selezionato come:
+
+```text
+Realm Settings -> Themes -> Login Theme -> dens-studio
+```
+
+Per dettagli su:
+- struttura tema
+- deploy tema
+- sync
+- cache temi
+- troubleshooting su login/register/reset password
+
+vedi `docs/THEMES.md`.
+
+---
+
+## Backup e restore
+
+### Backup DB
 
 ```bash
-sudo apt install -y certbot python3-certbot-nginx
-sudo certbot --nginx -d auth.example.com
-sudo certbot renew --dry-run
+cd /opt/keycloak
+./scripts/backup_db.sh
+```
+
+### Restore DB
+
+```bash
+cd /opt/keycloak
+./scripts/restore_db.sh backups/<nome-file>.sql
+```
+
+**Prima di un restore in produzione:**
+- fermare i servizi interessati
+- verificare il file di backup
+- preferire prima un test su staging
+
+Dettagli completi: `docs/BACKUP_RESTORE.md`.
+
+---
+
+## Update sicuro
+
+Per applicare aggiornamenti controllati:
+
+```bash
+cd /opt/keycloak
+./scripts/update.sh
+```
+
+Questo script:
+1. mostra lo stato stack
+2. fa pull delle immagini remote necessarie
+3. rebuilda l'immagine Keycloak locale
+4. rialza lo stack
+
+### Prima di un update importante
+
+Esegui sempre:
+
+```bash
+cd /opt/keycloak
+./scripts/backup_db.sh
 ```
 
 ---
 
-## 7) Avvio automatico (systemd)
-Copia il service file:
-```bash
-sudo cp systemd/keycloak-compose.service /etc/systemd/system/keycloak-compose.service
-sudo systemctl daemon-reload
-sudo systemctl enable --now keycloak-compose
-sudo systemctl status keycloak-compose --no-pager
-```
-
----
-
-## 8) Primo accesso Keycloak (admin)
-Apri:
-- `https://auth.example.com`
-
-Login admin usando:
-- `KEYCLOAK_ADMIN`
-- `KEYCLOAK_ADMIN_PASSWORD`
-
-Post-install obbligatorio (produzione):
-- cambia password admin
-- limita accesso admin console
-- configura SMTP (Realm settings → Email)
-- crea un realm dedicato (es. `dens`) separato da `master`
-
-Discovery OIDC:
-- `https://auth.example.com/realms/<realm>/.well-known/openid-configuration`
-
----
-
-## 9) Operatività DevOps
+## Logs e healthcheck
 
 ### Logs
+
 ```bash
+cd /opt/keycloak
 ./scripts/logs.sh
 ```
 
 ### Healthcheck
+
 ```bash
+cd /opt/keycloak
 ./scripts/healthcheck.sh
 ```
 
-### Backup DB
-```bash
-./scripts/backup_db.sh
-ls -lh backups/
-```
-
-### Restore DB
-```bash
-# ATTENZIONE: usa prima un ambiente di test
-./scripts/restore_db.sh backups/keycloak_YYYY-MM-DD.sql
-```
-
-### Update controllato (pin versione)
-- cambia il tag Keycloak in `docker-compose.yml`
-- poi:
-```bash
-./scripts/update.sh
-```
+Per i casi più frequenti: `docs/TROUBLESHOOTING.md`.
 
 ---
 
-## 10) Hardening minimo
-Vedi `docs/SECURITY.md`.
+## Primo accesso Keycloak
+
+Apri:
+
+```text
+https://<KC_HOSTNAME>
+```
+
+Login admin con:
+- `KEYCLOAK_ADMIN`
+- `KEYCLOAK_ADMIN_PASSWORD`
+
+### Checklist post-install consigliata
+
+- cambiare password admin
+- configurare SMTP
+- creare realm dedicato separato da `master`
+- configurare client, redirect URI e ruoli
+- verificare login, logout, reset password e registrazione
+- abilitare localization se richiesta
+- selezionare il login theme corretto
 
 ---
 
-## 11) Troubleshooting
-Vedi `docs/TROUBLESHOOTING.md`.
+## Procedure principali disponibili nei docs
+
+- `docs/DEPLOYMENT.md` → deploy iniziale e update completo
+- `docs/THEMES.md` → gestione temi Keycloak custom
+- `docs/BACKUP_RESTORE.md` → backup e restore database
+- `docs/NGINX_TLS.md` → reverse proxy e TLS
+- `docs/SYSTEMD.md` → gestione servizio systemd
+- `docs/OPERATIONS.md` → operatività quotidiana
+- `docs/SECURITY.md` → hardening minimo
+- `docs/TROUBLESHOOTING.md` → errori comuni e diagnosi
+
+---
+
+## Errori da evitare
+
+Non fare queste operazioni senza sapere esattamente l'effetto:
+
+```bash
+docker compose down -v
+docker volume prune
+docker system prune --volumes
+```
+
+Perché possono rimuovere volumi e dati runtime persistenti.
+
+Evita anche di:
+- lavorare direttamente in `/opt/keycloak` modificando file a mano
+- copiare temi nel container con `docker cp` come soluzione permanente
+- committare `.env`
+- cambiare parametri DB se l'obiettivo è solo aggiornare il tema
+
+---
+
+## Note operative importanti
+
+- il nome della cartella sorgente nel flusso attuale è **`keyklock-setup`**
+- la cartella deploy attuale è **`/opt/keycloak`**
+- il servizio `systemd` deve puntare alla cartella deploy, non a quella sorgente
+- i temi `dens-studio_prec` e `dens-studio_prec2` sono copie precedenti: tienili solo se servono davvero come storico
+
+---
+
+## Licenza
+
+Vedi `LICENSE`.

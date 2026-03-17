@@ -554,204 +554,188 @@ select:-webkit-autofill {
   }
 }
 
-html {
-  background: #ffffff !important;
-  color-scheme: light;
+/* Stronger page centering and white background overrides */
+html,
+body {
+  height: 100%;
 }
 
 body.dens-login-body {
-  display: flex;
-  align-items: stretch;
-  justify-content: center;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #ffffff !important;
+}
+
+.dens-shell {
+  min-height: 100dvh;
+  flex: 1 1 auto;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #ffffff !important;
 }
 
 .dens-stack {
-  min-height: calc(100vh - 48px);
+  margin: auto;
   justify-content: center;
 }
 
-.dens-card,
-.dens-card__body,
-.dens-card__info,
-.dens-footer,
-.dens-stack,
-.dens-shell {
-  background: #ffffff;
-}
-
-.dens-kc-field {
+/* Register page field normalization */
+.dens-form--register .dens-kc-field {
   width: 100%;
 }
 
-.dens-kc-field + .dens-kc-field {
-  margin-top: 14px;
-}
-
-.dens-kc-label-wrap {
-  width: 100%;
-  display: flex;
-  align-items: baseline;
-  gap: 4px;
-  margin-bottom: 8px;
-}
-
-.dens-kc-input-wrap {
-  width: 100%;
-}
-
-.required {
-  color: #111111;
-  font-size: 14px;
-  font-weight: 600;
-}
-
-.dens-kc-input {
-  display: block;
-  width: 100%;
-  min-height: 46px;
-  border: 1px solid var(--dens-border-strong);
-  border-radius: var(--dens-radius-input);
-  outline: 0;
-  box-shadow: none;
-  background: #ffffff;
-  padding: 0 14px;
-  font-size: 16px;
-  line-height: 1.4;
-  color: #111111;
-  font-family: var(--dens-font);
-  appearance: none;
-  transition: border-color 0.15s ease, box-shadow 0.15s ease;
-}
-
-textarea.dens-kc-input {
-  min-height: 96px;
-  padding-top: 12px;
-  padding-bottom: 12px;
-  resize: vertical;
-}
-
-select.dens-kc-input {
-  padding-right: 40px;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8' fill='none'%3E%3Cpath d='M1 1.5L6 6.5L11 1.5' stroke='%23737373' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 14px center;
-  background-size: 12px 8px;
-}
-
-.dens-kc-input:focus,
-.dens-kc-input:focus-visible {
-  border-color: var(--dens-primary);
-  box-shadow: 0 0 0 3px var(--dens-focus);
-}
-
-.dens-kc-input[aria-invalid="true"] {
-  border-color: var(--dens-danger);
-}
-
-.dens-kc-input::placeholder {
-  color: #9a9a9a;
-}
-
-.dens-helper-text {
-  font-size: 13px;
-  line-height: 1.45;
-  color: #666666;
-}
-
-.dens-helper-text--before {
+.dens-form--register .dens-kc-field > label,
+.dens-form--register .dens-kc-field .dens-label,
+.dens-form--register .dens-kc-field .pf-c-form__label,
+.dens-form--register .dens-kc-field .pf-v5-c-form__label,
+.dens-form--register .dens-kc-field label {
+  display: inline-block;
+  width: auto;
   margin: 0 0 8px;
 }
 
-.dens-helper-text--after {
-  margin: 8px 0 0;
+.dens-form--register .dens-kc-field > :not(label):not(.dens-input-wrap):not(.dens-field-error):not(.dens-alert):not(.g-recaptcha),
+.dens-form--register .dens-kc-field .pf-c-form__group-control,
+.dens-form--register .dens-kc-field .pf-v5-c-form__group-control,
+.dens-form--register .dens-kc-field .pf-c-input-group,
+.dens-form--register .dens-kc-field .pf-v5-c-input-group,
+.dens-form--register .dens-kc-field .input-group,
+.dens-form--register .dens-kc-field [class*="input-group"],
+.dens-form--register .dens-kc-field [class*="wrapper"],
+.dens-form--register .dens-kc-field [class*="Wrapper"] {
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
 }
 
-.dens-kc-group {
-  width: 100%;
-  margin: 2px 0 14px;
-}
-
-.dens-kc-group__header {
-  font-size: 14px;
-  line-height: 1.4;
-  font-weight: 700;
-  color: #111111;
-}
-
-.dens-kc-group__description {
-  margin-top: 6px;
-  font-size: 13px;
-  line-height: 1.5;
-  color: #666666;
-}
-
-.dens-choice-list {
-  display: grid;
-  gap: 10px;
-}
-
-.dens-choice {
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-}
-
-.dens-choice__input,
-.dens-check__input {
-  width: 16px;
-  height: 16px;
-  margin: 2px 0 0;
-  flex: 0 0 16px;
-}
-
-.dens-choice__label,
-.dens-check__label {
-  font-size: 14px;
-  line-height: 1.45;
-  color: #555555;
-}
-
-.dens-check--register {
-  margin-top: 0;
-  align-items: flex-start;
-}
-
-.dens-terms-card {
-  width: 100%;
-  border: 1px solid var(--dens-border);
-  border-radius: 12px;
-  background: #fafafa;
-  padding: 14px;
-}
-
-.dens-terms-card__title {
-  font-size: 14px;
-  line-height: 1.4;
-  font-weight: 600;
-  color: #111111;
-}
-
-.dens-terms-card__text {
-  margin-top: 8px;
-  font-size: 13px;
-  line-height: 1.55;
-  color: #555555;
-}
-
-.dens-kc-field--checkbox .dens-field-error {
-  margin-top: 8px;
-}
-
-.dens-form--register .dens-input-wrap {
+.dens-form--register .dens-input-wrap,
+.dens-form--register .dens-input-wrap--enhanced {
+  position: relative;
+  display: flex !important;
+  align-items: center;
+  width: 100% !important;
   min-height: 46px;
+  border: 1px solid var(--dens-border-strong) !important;
+  border-radius: var(--dens-radius-input) !important;
+  background: #ffffff !important;
+  overflow: hidden;
 }
 
-.dens-form--register .dens-register--back {
-  margin-top: 14px;
+.dens-form--register .dens-input-wrap:focus-within,
+.dens-form--register .dens-input-wrap--enhanced:focus-within {
+  border-color: var(--dens-primary) !important;
+  box-shadow: 0 0 0 3px var(--dens-focus) !important;
 }
 
-@media (max-width: 560px) {
+.dens-form--register .dens-input-wrap.is-error,
+.dens-form--register .dens-input-wrap--enhanced.is-error {
+  border-color: var(--dens-danger) !important;
+}
+
+.dens-form--register .dens-input-wrap > input,
+.dens-form--register .dens-input-wrap > select,
+.dens-form--register .dens-input-wrap > textarea,
+.dens-form--register .dens-input-wrap--enhanced > input,
+.dens-form--register .dens-input-wrap--enhanced > select,
+.dens-form--register .dens-input-wrap--enhanced > textarea,
+.dens-form--register .dens-input-wrap > div,
+.dens-form--register .dens-input-wrap--enhanced > div,
+.dens-form--register .dens-input-wrap > span:not(.dens-password-toggle):not(.dens-input-icon),
+.dens-form--register .dens-input-wrap--enhanced > span:not(.dens-password-toggle):not(.dens-input-icon) {
+  flex: 1 1 auto;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+}
+
+.dens-form--register .dens-input-wrap input,
+.dens-form--register .dens-input-wrap select,
+.dens-form--register .dens-input-wrap textarea,
+.dens-form--register .dens-input-wrap--enhanced input,
+.dens-form--register .dens-input-wrap--enhanced select,
+.dens-form--register .dens-input-wrap--enhanced textarea,
+.dens-form--register .dens-kc-field input[type="text"],
+.dens-form--register .dens-kc-field input[type="email"],
+.dens-form--register .dens-kc-field input[type="password"],
+.dens-form--register .dens-kc-field input[type="tel"],
+.dens-form--register .dens-kc-field input[type="number"],
+.dens-form--register .dens-kc-field input[type="search"],
+.dens-form--register .dens-kc-field input[type="url"],
+.dens-form--register .dens-kc-field select,
+.dens-form--register .dens-kc-field textarea {
+  display: block !important;
+  width: 100% !important;
+  max-width: none !important;
+  min-width: 0 !important;
+  min-height: 46px !important;
+  margin: 0 !important;
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+  background: transparent !important;
+  border-radius: 0 !important;
+  padding: 0 14px !important;
+  font-size: 16px !important;
+  line-height: 1.4 !important;
+  color: #111111 !important;
+}
+
+.dens-form--register .dens-kc-field textarea,
+.dens-form--register .dens-input-wrap textarea,
+.dens-form--register .dens-input-wrap--enhanced textarea {
+  min-height: 96px !important;
+  padding-top: 12px !important;
+  padding-bottom: 12px !important;
+  resize: vertical;
+}
+
+.dens-form--register .dens-input-wrap .dens-password-toggle,
+.dens-form--register .dens-input-wrap--enhanced .dens-password-toggle {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  flex: 0 0 auto;
+  transform: translateY(-50%);
+}
+
+.dens-form--register .dens-kc-field .dens-input--password,
+.dens-form--register .dens-input-wrap input[type="password"],
+.dens-form--register .dens-input-wrap--enhanced input[type="password"] {
+  padding-right: 44px !important;
+}
+
+.dens-form--register .dens-kc-field .dens-field-error,
+.dens-form--register .dens-kc-field .pf-c-form__helper-text,
+.dens-form--register .dens-kc-field .pf-v5-c-form__helper-text,
+.dens-form--register .dens-kc-field .error,
+.dens-form--register .dens-kc-field [aria-live="polite"] {
+  display: block;
+  width: 100%;
+  margin-top: 8px;
+}
+
+.dens-form--register .dens-kc-field--terms {
+  margin-top: 16px;
+}
+
+.dens-form--register .dens-kc-field--terms input[type="checkbox"] {
+  width: 16px !important;
+  height: 16px !important;
+}
+
+@media (max-height: 760px) {
+  body.dens-login-body {
+    display: block !important;
+  }
+
+  .dens-shell {
+    min-height: auto;
+    padding-top: 28px;
+    padding-bottom: 28px;
+  }
+
   .dens-stack {
-    min-height: calc(100vh - 56px);
+    margin: 0 auto;
   }
 }
