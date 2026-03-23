@@ -45,6 +45,18 @@ kcadm() {
   compose_exec /opt/keycloak/bin/kcadm.sh "$@"
 }
 
+container_write_file() {
+  local host_file="$1"
+  local container_file="$2"
+
+  compose_exec sh -lc "mkdir -p \"$(dirname "$container_file")\" && cat > \"$container_file\"" < "$host_file"
+}
+
+container_remove_file() {
+  local container_file="$1"
+  compose_exec sh -lc "rm -f \"$container_file\"" >/dev/null 2>&1 || true
+}
+
 check_compose_stack() {
   docker compose ps keycloak >/dev/null 2>&1 || fail "Servizio keycloak non rilevato dallo stack docker compose. Avvia prima i container con docker compose up -d."
 }
@@ -173,14 +185,19 @@ PY
 apply_realm() {
   local realm_file="$1"
   local realm_name="$2"
+  local container_file="/tmp/bootstrap-${realm_name}-realm.json"
+
+  container_write_file "$realm_file" "$container_file"
 
   if realm_exists "$realm_name"; then
     log "Aggiorno realm $realm_name"
-    kcadm update "realms/$realm_name" -f "$realm_file" >/dev/null
+    kcadm update "realms/$realm_name" -f "$container_file" >/dev/null
   else
     log "Creo realm $realm_name"
-    kcadm create realms -f "$realm_file" >/dev/null
+    kcadm create realms -f "$container_file" >/dev/null
   fi
+
+  container_remove_file "$container_file"
 }
 
 apply_client() {
@@ -200,13 +217,21 @@ PY
   local existing_id
   existing_id="$(client_internal_id "$realm_name" "$client_id")"
 
+  local safe_client_id
+  safe_client_id="$(printf '%s' "$client_id" | tr -c 'A-Za-z0-9._-' '_')"
+  local container_file="/tmp/bootstrap-${realm_name}-${safe_client_id}.json"
+
+  container_write_file "$client_file" "$container_file"
+
   if [[ -n "$existing_id" ]]; then
     log "Aggiorno client $client_id nel realm $realm_name"
-    kcadm update "clients/$existing_id" -r "$realm_name" -f "$client_file" >/dev/null
+    kcadm update "clients/$existing_id" -r "$realm_name" -f "$container_file" >/dev/null
   else
     log "Creo client $client_id nel realm $realm_name"
-    kcadm create clients -r "$realm_name" -f "$client_file" >/dev/null
+    kcadm create clients -r "$realm_name" -f "$container_file" >/dev/null
   fi
+
+  container_remove_file "$container_file"
 }
 
 apply_config_file() {
