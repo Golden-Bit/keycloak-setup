@@ -1,0 +1,106 @@
+{
+  "realm": {
+    "realm": "REALM-A-DEV",
+    "enabled": true,
+    "displayName": "REALM A DEV",
+    "sslRequired": "external",
+    "registrationAllowed": true,
+    "registrationEmailAsUsername": false,
+    "rememberMe": true,
+    "verifyEmail": false,
+    "loginWithEmailAllowed": true,
+    "duplicateEmailsAllowed": false,
+    "resetPasswordAllowed": true,
+    "editUsernameAllowed": false,
+    "bruteForceProtected": true,
+    "eventsEnabled": true,
+    "adminEventsEnabled": true,
+    "adminEventsDetailsEnabled": true,
+    "accessTokenLifespan": 300,
+    "ssoSessionIdleTimeout": 1800,
+    "ssoSessionMaxLifespan": 36000,
+    "defaultSignatureAlgorithm": "RS256"
+  },
+  "clients": [
+    {
+      "clientId": "dens-sudio-dev",
+      "name": "dens-sudio-dev",
+      "description": "Client browser OIDC per REALM-A-DEV con hosted UI Keycloak.",
+      "protocol": "openid-connect",
+      "enabled": true,
+      "publicClient": true,
+      "bearerOnly": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "rootUrl": "https://app-a-dev.example.com",
+      "baseUrl": "https://app-a-dev.example.com",
+      "redirectUris": [
+        "https://app-a-dev.example.com/*",
+        "http://localhost:3000/*"
+      ],
+      "webOrigins": [
+        "https://app-a-dev.example.com",
+        "http://localhost:3000"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    },
+    {
+      "clientId": "confidential-dev",
+      "name": "confidential-dev",
+      "description": "Client confidential/server-side per REALM-A-DEV con client secret e service account.",
+      "protocol": "openid-connect",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "CHANGE_ME_REALM_A_CONFIDENTIAL_SECRET",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "rootUrl": "https://api-a-dev.example.com",
+      "baseUrl": "https://api-a-dev.example.com",
+      "redirectUris": [
+        "https://api-a-dev.example.com/*",
+        "http://localhost:8081/*"
+      ],
+      "webOrigins": [
+        "https://api-a-dev.example.com"
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    }
+  ]
+}

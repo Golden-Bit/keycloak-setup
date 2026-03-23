@@ -5,7 +5,7 @@ Repository operativo per installare, aggiornare e gestire un'istanza self-hosted
 - Docker Compose per Keycloak e PostgreSQL
 - Nginx come reverse proxy su 80/443
 - systemd per l'avvio automatico dello stack
-- script per sync del repository, update, backup, restore, healthcheck e logs
+- script per sync del repository, update, bootstrap realm/client, backup, restore, healthcheck e logs
 - build locale dell'immagine Keycloak a partire dal repository
 - directory dedicata alle personalizzazioni UI incluse nella build
 
@@ -34,6 +34,11 @@ keyklock-setup/
 ├─ Dockerfile
 ├─ .env.example
 ├─ README.md
+├─ config/
+│  └─ realms/
+│     ├─ README.md
+│     ├─ realm-a-dev.json
+│     └─ realm-b-dev.json
 ├─ nginx/
 │  └─ keycloak.conf
 ├─ systemd/
@@ -42,6 +47,7 @@ keyklock-setup/
 │  ├─ backup_db.sh
 │  ├─ restore_db.sh
 │  ├─ update.sh
+│  ├─ bootstrap_realms.sh
 │  ├─ healthcheck.sh
 │  ├─ logs.sh
 │  └─ sync-keycloak-repo.sh
@@ -51,6 +57,7 @@ keyklock-setup/
 │  ├─ CUSTOM_UI.md
 │  ├─ BACKUP_RESTORE.md
 │  ├─ OPERATIONS.md
+│  ├─ REALM_BOOTSTRAP.md
 │  ├─ SYSTEMD.md
 │  ├─ NGINX_TLS.md
 │  ├─ SECURITY.md
@@ -197,6 +204,31 @@ Il repository include una directory dedicata alle personalizzazioni dell'interfa
 Queste personalizzazioni si gestiscono a livello di repository e non tramite modifiche manuali dentro il container in produzione.
 
 Per linee guida, rollout, cache e troubleshooting vedi `docs/CUSTOM_UI.md`.
+
+## Bootstrap dichiarativo di realm e client
+
+Il repository ora include una cartella `config/realms/` e uno script `scripts/bootstrap_realms.sh` per creare o aggiornare realm e client da file JSON.
+
+I file attualmente inclusi definiscono:
+
+- `REALM-A-DEV` con i client `dens-sudio-dev` e `confidential-dev`
+- `REALM-B-DEV` con i client `business-suite-dev`, `agents-dev`, `studio-handler-dev` e `confidential-dev`
+
+I client browser sono predisposti per hosted UI Keycloak con OIDC Authorization Code Flow e PKCE; i client `confidential-dev` sono predisposti per integrazioni server-side con client secret e service account.
+
+Per applicare le configurazioni:
+
+```bash
+./scripts/bootstrap_realms.sh
+```
+
+Per automatizzare il bootstrap dopo ogni update imposta in `.env`:
+
+```bash
+KEYCLOAK_BOOTSTRAP_APPLY_REALMS=true
+```
+
+Approfondimenti in `docs/REALM_BOOTSTRAP.md`.
 
 ## Backup e restore
 

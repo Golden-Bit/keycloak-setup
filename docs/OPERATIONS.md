@@ -23,6 +23,16 @@ docker compose logs --tail=200 keycloak
 docker compose logs --tail=200 postgres
 ```
 
+## Bootstrap realm e client
+
+Per applicare i realm e i client dichiarati nei file JSON del repository:
+
+```bash
+./scripts/bootstrap_realms.sh
+```
+
+Se nel file `.env` imposti `KEYCLOAK_BOOTSTRAP_APPLY_REALMS=true`, lo script viene rilanciato automaticamente da `./scripts/update.sh` dopo il riavvio dello stack.
+
 ## Healthcheck
 
 ```bash

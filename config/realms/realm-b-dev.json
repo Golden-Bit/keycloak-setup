@@ -1,0 +1,188 @@
+{
+  "realm": {
+    "realm": "REALM-B-DEV",
+    "enabled": true,
+    "displayName": "REALM B DEV",
+    "sslRequired": "external",
+    "registrationAllowed": true,
+    "registrationEmailAsUsername": false,
+    "rememberMe": true,
+    "verifyEmail": false,
+    "loginWithEmailAllowed": true,
+    "duplicateEmailsAllowed": false,
+    "resetPasswordAllowed": true,
+    "editUsernameAllowed": false,
+    "bruteForceProtected": true,
+    "eventsEnabled": true,
+    "adminEventsEnabled": true,
+    "adminEventsDetailsEnabled": true,
+    "accessTokenLifespan": 300,
+    "ssoSessionIdleTimeout": 1800,
+    "ssoSessionMaxLifespan": 36000,
+    "defaultSignatureAlgorithm": "RS256"
+  },
+  "clients": [
+    {
+      "clientId": "business-suite-dev",
+      "name": "business-suite-dev",
+      "description": "Client browser OIDC per REALM-B-DEV con hosted UI Keycloak.",
+      "protocol": "openid-connect",
+      "enabled": true,
+      "publicClient": true,
+      "bearerOnly": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "rootUrl": "https://business-suite-dev.example.com",
+      "baseUrl": "https://business-suite-dev.example.com",
+      "redirectUris": [
+        "https://business-suite-dev.example.com/*",
+        "http://localhost:3001/*"
+      ],
+      "webOrigins": [
+        "https://business-suite-dev.example.com",
+        "http://localhost:3001"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    },
+    {
+      "clientId": "agents-dev",
+      "name": "agents-dev",
+      "description": "Client browser OIDC per REALM-B-DEV con hosted UI Keycloak.",
+      "protocol": "openid-connect",
+      "enabled": true,
+      "publicClient": true,
+      "bearerOnly": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "rootUrl": "https://agents-dev.example.com",
+      "baseUrl": "https://agents-dev.example.com",
+      "redirectUris": [
+        "https://agents-dev.example.com/*",
+        "http://localhost:3002/*"
+      ],
+      "webOrigins": [
+        "https://agents-dev.example.com",
+        "http://localhost:3002"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    },
+    {
+      "clientId": "studio-handler-dev",
+      "name": "studio-handler-dev",
+      "description": "Client browser OIDC per REALM-B-DEV con hosted UI Keycloak.",
+      "protocol": "openid-connect",
+      "enabled": true,
+      "publicClient": true,
+      "bearerOnly": false,
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": false,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "rootUrl": "https://studio-handler-dev.example.com",
+      "baseUrl": "https://studio-handler-dev.example.com",
+      "redirectUris": [
+        "https://studio-handler-dev.example.com/*",
+        "http://localhost:3003/*"
+      ],
+      "webOrigins": [
+        "https://studio-handler-dev.example.com",
+        "http://localhost:3003"
+      ],
+      "attributes": {
+        "pkce.code.challenge.method": "S256"
+      },
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    },
+    {
+      "clientId": "confidential-dev",
+      "name": "confidential-dev",
+      "description": "Client confidential/server-side per REALM-B-DEV con client secret e service account.",
+      "protocol": "openid-connect",
+      "enabled": true,
+      "publicClient": false,
+      "bearerOnly": false,
+      "clientAuthenticatorType": "client-secret",
+      "secret": "CHANGE_ME_REALM_B_CONFIDENTIAL_SECRET",
+      "standardFlowEnabled": true,
+      "implicitFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "serviceAccountsEnabled": true,
+      "frontchannelLogout": true,
+      "fullScopeAllowed": true,
+      "rootUrl": "https://api-b-dev.example.com",
+      "baseUrl": "https://api-b-dev.example.com",
+      "redirectUris": [
+        "https://api-b-dev.example.com/*",
+        "http://localhost:8082/*"
+      ],
+      "webOrigins": [
+        "https://api-b-dev.example.com"
+      ],
+      "defaultClientScopes": [
+        "web-origins",
+        "acr",
+        "profile",
+        "roles",
+        "email"
+      ],
+      "optionalClientScopes": [
+        "address",
+        "phone",
+        "offline_access",
+        "microprofile-jwt"
+      ]
+    }
+  ]
+}

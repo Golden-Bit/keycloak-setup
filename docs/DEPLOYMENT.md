@@ -54,6 +54,16 @@ docker compose up -d
 docker compose ps
 ```
 
+## Bootstrap iniziale di realm e client
+
+Dopo il primo `docker compose up -d`, applica i realm e i client dichiarati nel repository:
+
+```bash
+./scripts/bootstrap_realms.sh
+```
+
+Questa operazione crea o aggiorna i realm e i client presenti in `config/realms/`.
+
 ## Verifiche iniziali
 
 Controlli minimi:
