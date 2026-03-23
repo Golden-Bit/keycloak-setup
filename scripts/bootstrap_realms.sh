@@ -8,6 +8,7 @@ KCADM_CONFIG_PATH="/tmp/kcadm-bootstrap.config"
 KEYCLOAK_INTERNAL_URL="${KEYCLOAK_INTERNAL_URL:-http://127.0.0.1:8080}"
 WAIT_SECONDS="${KEYCLOAK_BOOTSTRAP_WAIT_SECONDS:-120}"
 WAIT_INTERVAL="${KEYCLOAK_BOOTSTRAP_WAIT_INTERVAL:-5}"
+TMP_ROOT=""
 
 log() {
   echo "[INFO] $*"
@@ -39,6 +40,10 @@ load_env_file() {
 }
 
 compose_exec() {
+  docker compose exec -T -e KCADM_CONFIG="$KCADM_CONFIG_PATH" keycloak "$@" < /dev/null
+}
+
+compose_exec_with_stdin() {
   docker compose exec -T -e KCADM_CONFIG="$KCADM_CONFIG_PATH" keycloak "$@"
 }
 
@@ -52,7 +57,7 @@ container_write_file() {
   local container_dir
 
   container_dir="$(dirname "$container_file")"
-  compose_exec sh -lc "mkdir -p \"$container_dir\" && cat > \"$container_file\"" < "$host_file"
+  compose_exec_with_stdin sh -lc "mkdir -p \"$container_dir\" && cat > \"$container_file\"" < "$host_file"
 }
 
 container_remove_file() {
@@ -247,10 +252,10 @@ apply_config_file() {
   apply_realm "$work_dir/realm.json" "$realm_name"
 
   if [[ -f "$work_dir/clients.tsv" ]]; then
-    while IFS=$'\t' read -r client_id client_file; do
+    while IFS=$'\t' read -r client_id client_file <&3; do
       [[ -z "$client_id" ]] && continue
       apply_client "$realm_name" "$client_file"
-    done < "$work_dir/clients.tsv"
+    done 3< "$work_dir/clients.tsv"
   fi
 }
 
@@ -264,16 +269,15 @@ main() {
   wait_for_keycloak
   auth_admin
 
-  local tmp_root
-  tmp_root="$(mktemp -d)"
-  trap 'rm -rf "$tmp_root"' EXIT
+  TMP_ROOT="$(mktemp -d)"
+  trap 'rm -rf "${TMP_ROOT:-}"' EXIT
 
   mapfile -t config_files < <(expand_target_files)
   (( ${#config_files[@]} > 0 )) || fail "Nessun file JSON trovato in $CONFIG_TARGET"
 
   for config_file in "${config_files[@]}"; do
     local work_dir
-    work_dir="$tmp_root/$(basename "$config_file" .json)"
+    work_dir="$TMP_ROOT/$(basename "$config_file" .json)"
     mkdir -p "$work_dir"
     apply_config_file "$config_file" "$work_dir"
   done
