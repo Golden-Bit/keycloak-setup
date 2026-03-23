@@ -24,6 +24,7 @@ require_cmd() {
 
 load_env_file() {
   local env_file="$ROOT_DIR/.env"
+
   if [[ -f "$env_file" ]]; then
     set -a
     # shellcheck disable=SC1090
@@ -48,8 +49,10 @@ kcadm() {
 container_write_file() {
   local host_file="$1"
   local container_file="$2"
+  local container_dir
 
-  compose_exec sh -lc "mkdir -p \"$(dirname "$container_file")\" && cat > \"$container_file\"" < "$host_file"
+  container_dir="$(dirname "$container_file")"
+  compose_exec sh -lc "mkdir -p \"$container_dir\" && cat > \"$container_file\"" < "$host_file"
 }
 
 container_remove_file() {
@@ -110,18 +113,18 @@ source = Path(sys.argv[1])
 out_dir = Path(sys.argv[2])
 out_dir.mkdir(parents=True, exist_ok=True)
 
-with source.open('r', encoding='utf-8') as fh:
+with source.open("r", encoding="utf-8") as fh:
     payload = json.load(fh)
 
-if 'realm' not in payload or not isinstance(payload['realm'], dict):
+if "realm" not in payload or not isinstance(payload["realm"], dict):
     raise SystemExit(f"Config non valida in {source}: chiave 'realm' mancante o non oggetto")
 
-realm = payload['realm']
-realm_name = realm.get('realm')
+realm = payload["realm"]
+realm_name = realm.get("realm")
 if not realm_name:
     raise SystemExit(f"Config non valida in {source}: realm.realm mancante")
 
-clients = payload.get('clients', [])
+clients = payload.get("clients", [])
 if not isinstance(clients, list):
     raise SystemExit(f"Config non valida in {source}: clients deve essere un array")
 
@@ -129,25 +132,25 @@ seen = set()
 for client in clients:
     if not isinstance(client, dict):
         raise SystemExit(f"Config non valida in {source}: ogni client deve essere un oggetto")
-    client_id = client.get('clientId')
+    client_id = client.get("clientId")
     if not client_id:
         raise SystemExit(f"Config non valida in {source}: client senza clientId")
     if client_id in seen:
         raise SystemExit(f"Config non valida in {source}: clientId duplicato '{client_id}'")
     seen.add(client_id)
 
-realm_file = out_dir / 'realm.json'
-realm_file.write_text(json.dumps(realm, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+realm_file = out_dir / "realm.json"
+realm_file.write_text(json.dumps(realm, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
-manifest_file = out_dir / 'clients.tsv'
+manifest_file = out_dir / "clients.tsv"
 rows = []
 for index, client in enumerate(clients, start=1):
-    safe = ''.join(ch if ch.isalnum() or ch in '-_.' else '_' for ch in client['clientId'])
+    safe = "".join(ch if ch.isalnum() or ch in "-_." else "_" for ch in client["clientId"])
     client_file = out_dir / f"client-{index:02d}-{safe}.json"
-    client_file.write_text(json.dumps(client, indent=2, ensure_ascii=False) + '\n', encoding='utf-8')
+    client_file.write_text(json.dumps(client, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
     rows.append(f"{client['clientId']}\t{client_file}\n")
-manifest_file.write_text(''.join(rows), encoding='utf-8')
 
+manifest_file.write_text("".join(rows), encoding="utf-8")
 print(realm_name)
 PY
 }
@@ -162,24 +165,25 @@ client_internal_id() {
   local client_id="$2"
 
   kcadm get clients -r "$realm_name" -q clientId="$client_id" --fields id,clientId | \
-    python3 - "$client_id" <<'PY'
+    python3 -c '
 import json
 import sys
 
 target = sys.argv[1]
+
 try:
     data = json.load(sys.stdin)
-except json.JSONDecodeError:
-    print('')
-    raise SystemExit(0)
+except Exception:
+    print("")
+    sys.exit(0)
 
 for item in data:
-    if item.get('clientId') == target:
-        print(item.get('id', ''))
-        raise SystemExit(0)
+    if item.get("clientId") == target:
+        print(item.get("id", ""))
+        sys.exit(0)
 
-print('')
-PY
+print("")
+' "$client_id"
 }
 
 apply_realm() {
@@ -205,14 +209,13 @@ apply_client() {
   local client_file="$2"
 
   local client_id
-  client_id="$(python3 - "$client_file" <<'PY'
+  client_id="$(python3 -c '
 import json
 import sys
-with open(sys.argv[1], 'r', encoding='utf-8') as fh:
+with open(sys.argv[1], "r", encoding="utf-8") as fh:
     data = json.load(fh)
-print(data['clientId'])
-PY
-)"
+print(data["clientId"])
+' "$client_file")"
 
   local existing_id
   existing_id="$(client_internal_id "$realm_name" "$client_id")"
@@ -255,6 +258,7 @@ main() {
   require_cmd docker
   require_cmd python3
   require_cmd curl
+
   load_env_file
   check_compose_stack
   wait_for_keycloak
