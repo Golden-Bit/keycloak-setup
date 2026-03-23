@@ -19,7 +19,14 @@
     "accessTokenLifespan": 300,
     "ssoSessionIdleTimeout": 1800,
     "ssoSessionMaxLifespan": 36000,
-    "defaultSignatureAlgorithm": "RS256"
+    "defaultSignatureAlgorithm": "RS256",
+    "loginTheme": "dens-studio",
+    "internationalizationEnabled": true,
+    "supportedLocales": [
+      "it",
+      "en"
+    ],
+    "defaultLocale": "it"
   },
   "clients": [
     {
@@ -47,7 +54,8 @@
         "http://localhost:3001"
       ],
       "attributes": {
-        "pkce.code.challenge.method": "S256"
+        "pkce.code.challenge.method": "S256",
+        "login_theme": "dens-studio"
       },
       "defaultClientScopes": [
         "web-origins",
@@ -88,7 +96,8 @@
         "http://localhost:3002"
       ],
       "attributes": {
-        "pkce.code.challenge.method": "S256"
+        "pkce.code.challenge.method": "S256",
+        "login_theme": "dens-studio"
       },
       "defaultClientScopes": [
         "web-origins",
@@ -129,7 +138,8 @@
         "http://localhost:3003"
       ],
       "attributes": {
-        "pkce.code.challenge.method": "S256"
+        "pkce.code.challenge.method": "S256",
+        "login_theme": "dens-studio"
       },
       "defaultClientScopes": [
         "web-origins",
@@ -170,6 +180,9 @@
       "webOrigins": [
         "https://api-b-dev.example.com"
       ],
+      "attributes": {
+        "login_theme": "dens-studio"
+      },
       "defaultClientScopes": [
         "web-origins",
         "acr",
