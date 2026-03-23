@@ -9,6 +9,8 @@ KEYCLOAK_INTERNAL_URL="${KEYCLOAK_INTERNAL_URL:-http://127.0.0.1:8080}"
 WAIT_SECONDS="${KEYCLOAK_BOOTSTRAP_WAIT_SECONDS:-120}"
 WAIT_INTERVAL="${KEYCLOAK_BOOTSTRAP_WAIT_INTERVAL:-5}"
 TMP_ROOT=""
+PUBLIC_BASE_URL=""
+declare -a SUMMARY_CONFIG_FILES=()
 
 log() {
   echo "[INFO] $*"
@@ -37,6 +39,13 @@ load_env_file() {
 
   : "${KEYCLOAK_ADMIN:?Variabile KEYCLOAK_ADMIN mancante nel file .env}"
   : "${KEYCLOAK_ADMIN_PASSWORD:?Variabile KEYCLOAK_ADMIN_PASSWORD mancante nel file .env}"
+
+  if [[ -n "${KEYCLOAK_PUBLIC_BASE_URL:-}" ]]; then
+    PUBLIC_BASE_URL="${KEYCLOAK_PUBLIC_BASE_URL%/}"
+  else
+    : "${KC_HOSTNAME:?Variabile KC_HOSTNAME mancante nel file .env}"
+    PUBLIC_BASE_URL="${KEYCLOAK_PUBLIC_SCHEME:-https}://${KC_HOSTNAME}"
+  fi
 }
 
 compose_exec() {
@@ -111,6 +120,8 @@ split_config() {
 
   python3 - "$source_file" "$out_dir" <<'PY'
 import json
+import os
+import re
 import sys
 from pathlib import Path
 
@@ -118,8 +129,33 @@ source = Path(sys.argv[1])
 out_dir = Path(sys.argv[2])
 out_dir.mkdir(parents=True, exist_ok=True)
 
-with source.open("r", encoding="utf-8") as fh:
-    payload = json.load(fh)
+raw = source.read_text(encoding="utf-8")
+expanded = os.path.expandvars(raw)
+
+payload = json.loads(expanded)
+
+unresolved = []
+
+def find_unresolved(node, path="$"):
+    if isinstance(node, dict):
+        for key, value in node.items():
+            find_unresolved(value, f"{path}.{key}")
+    elif isinstance(node, list):
+        for idx, value in enumerate(node):
+            find_unresolved(value, f"{path}[{idx}]")
+    elif isinstance(node, str) and "${" in node:
+        unresolved.append((path, node))
+
+find_unresolved(payload)
+
+if unresolved:
+    parts = [f"{path}={value}" for path, value in unresolved]
+    raise SystemExit(
+        "Config non valida: placeholder ambiente non risolti in "
+        + source.as_posix()
+        + " -> "
+        + "; ".join(parts)
+    )
 
 if "realm" not in payload or not isinstance(payload["realm"], dict):
     raise SystemExit(f"Config non valida in {source}: chiave 'realm' mancante o non oggetto")
@@ -143,6 +179,9 @@ for client in clients:
     if client_id in seen:
         raise SystemExit(f"Config non valida in {source}: clientId duplicato '{client_id}'")
     seen.add(client_id)
+
+resolved_config_file = out_dir / "resolved-config.json"
+resolved_config_file.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
 
 realm_file = out_dir / "realm.json"
 realm_file.write_text(json.dumps(realm, indent=2, ensure_ascii=False) + "\n", encoding="utf-8")
@@ -257,6 +296,104 @@ apply_config_file() {
       apply_client "$realm_name" "$client_file"
     done 3< "$work_dir/clients.tsv"
   fi
+
+  SUMMARY_CONFIG_FILES+=("$work_dir/resolved-config.json")
+}
+
+render_summary() {
+  python3 - "$PUBLIC_BASE_URL" "${SUMMARY_CONFIG_FILES[@]}" <<'PY'
+import json
+import sys
+
+public_base_url = sys.argv[1].rstrip("/")
+config_files = sys.argv[2:]
+
+def yn(value):
+    return "yes" if value else "no"
+
+def print_list(title, values):
+    print(f"    {title}:")
+    if values:
+        for item in values:
+            print(f"      - {item}")
+    else:
+        print("      - none")
+
+print("")
+print("=" * 100)
+print("BOOTSTRAP SUMMARY")
+print("=" * 100)
+
+for config_file in config_files:
+    with open(config_file, "r", encoding="utf-8") as fh:
+        payload = json.load(fh)
+
+    realm = payload["realm"]
+    realm_name = realm["realm"]
+    realm_display_name = realm.get("displayName", "")
+    realm_login_theme = realm.get("loginTheme", "(server-default)")
+    realm_default_locale = realm.get("defaultLocale", "-")
+    realm_supported_locales = ", ".join(realm.get("supportedLocales", [])) or "-"
+    realm_base = f"{public_base_url}/realms/{realm_name}"
+
+    print("")
+    print("-" * 100)
+    print(f"REALM: {realm_name}")
+    print("-" * 100)
+    print(f"  Display name           : {realm_display_name}")
+    print(f"  Enabled                : {yn(realm.get('enabled'))}")
+    print(f"  Login theme            : {realm_login_theme}")
+    print(f"  Registration allowed   : {yn(realm.get('registrationAllowed'))}")
+    print(f"  Verify email           : {yn(realm.get('verifyEmail'))}")
+    print(f"  Login with email       : {yn(realm.get('loginWithEmailAllowed'))}")
+    print(f"  Reset password         : {yn(realm.get('resetPasswordAllowed'))}")
+    print(f"  Brute force protected  : {yn(realm.get('bruteForceProtected'))}")
+    print(f"  Default locale         : {realm_default_locale}")
+    print(f"  Supported locales      : {realm_supported_locales}")
+    print(f"  Issuer                 : {realm_base}")
+    print(f"  Authorization endpoint : {realm_base}/protocol/openid-connect/auth")
+    print(f"  Token endpoint         : {realm_base}/protocol/openid-connect/token")
+    print(f"  Userinfo endpoint      : {realm_base}/protocol/openid-connect/userinfo")
+    print(f"  Logout endpoint        : {realm_base}/protocol/openid-connect/logout")
+
+    clients = payload.get("clients", [])
+    print(f"  Clients count          : {len(clients)}")
+
+    for client in clients:
+        attrs = client.get("attributes", {})
+        client_id = client.get("clientId", "-")
+        description = client.get("description", "")
+        client_type = "public" if client.get("publicClient") else "confidential"
+        login_theme_override = attrs.get("login_theme", "(fallback realm)")
+        pkce = attrs.get("pkce.code.challenge.method", "-")
+        client_auth_type = client.get("clientAuthenticatorType", "-")
+        secret_configured = "yes" if client.get("secret") else "no"
+
+        print("")
+        print(f"  * Client: {client_id}")
+        print(f"    Name                 : {client.get('name', '-')}")
+        print(f"    Description          : {description}")
+        print(f"    Type                 : {client_type}")
+        print(f"    Enabled              : {yn(client.get('enabled'))}")
+        print(f"    Protocol             : {client.get('protocol', '-')}")
+        print(f"    Login theme override : {login_theme_override}")
+        print(f"    Standard flow        : {yn(client.get('standardFlowEnabled'))}")
+        print(f"    Implicit flow        : {yn(client.get('implicitFlowEnabled'))}")
+        print(f"    Direct grants        : {yn(client.get('directAccessGrantsEnabled'))}")
+        print(f"    PKCE                 : {pkce}")
+        print(f"    Service accounts     : {yn(client.get('serviceAccountsEnabled'))}")
+        print(f"    Client auth type     : {client_auth_type}")
+        print(f"    Secret configured    : {secret_configured}")
+        print(f"    Root URL             : {client.get('rootUrl', '-')}")
+        print(f"    Base URL             : {client.get('baseUrl', '-')}")
+        print_list("Redirect URIs", client.get("redirectUris", []))
+        print_list("Web origins", client.get("webOrigins", []))
+
+print("")
+print("=" * 100)
+print("END OF SUMMARY")
+print("=" * 100)
+PY
 }
 
 main() {
@@ -283,6 +420,7 @@ main() {
   done
 
   log "Bootstrap realm/client completato con successo."
+  render_summary
 }
 
 main "$@"
